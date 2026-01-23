@@ -56,6 +56,12 @@ const Sidebar = () => {
   const [section, setSection] = useState<SidebarSection>('favorites')
   const innerWidth = viewportStore.useSelector(state => state.innerWidth)
 
+  /** Dynamically determine the width of the sidebar. */
+  const width = innerWidth < token('breakpoints.xl') ? '90%' : '400px'
+
+  /** Get the width of the sidebar in pixels, which is used for progress-based animations. */
+  const widthPx = innerWidth < token('breakpoints.xl') ? innerWidth * 0.9 : 400
+
   /** Track the current x position of the sidebar. This is used for progress-based animations. */
   const x = useMotionValue(0)
 
