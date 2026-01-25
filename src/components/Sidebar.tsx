@@ -13,6 +13,7 @@ import durations from '../util/durations'
 import fastClick from '../util/fastClick'
 import FadeTransition from './FadeTransition'
 import Favorites from './Favorites'
+import { ProgressiveBlur } from './ProgressiveBlur'
 import RecentlyDeleted from './RecentlyDeleted'
 import RecentlyEdited from './RecentlyEdited'
 
@@ -334,21 +335,12 @@ const SidebarBackground = ({
           inset: 0,
           width: backgroundWidth,
           pointerEvents: 'none',
-          backdropFilter: 'blur(16px)',
-          mask: 'linear-gradient(to right, black 0%, black 85%, {colors.bgTransparent} 100%)',
         })}
       >
-        <div
-          className={css({
-            position: 'absolute',
-            inset: 0,
-            backdropFilter: 'blur(28px)',
-          })}
-        />
+        <ProgressiveBlur direction='to right' maxBlur={32} layers={16} width={backgroundWidth} />
       </motion.div>
     </div>
   )
 }
 
 export default Sidebar
-
