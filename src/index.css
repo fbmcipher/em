@@ -3,3 +3,11 @@
   See: https://panda-css.com/docs/concepts/writing-styles
 */
 @layer reset, base, tokens, recipes, utilities;
+
+/* Register as an animatable <length> so motion can interpolate it numerically. */
+@property --virtual-keyboard-height {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+

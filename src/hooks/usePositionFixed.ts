@@ -39,6 +39,7 @@ const usePositionFixed = ({
   position: 'fixed' | 'absolute'
   top?: string
   bottom?: string
+  transform?: string
 } => {
   const virtualKeyboard = virtualKeyboardStore.useState()
 
@@ -55,6 +56,11 @@ const usePositionFixed = ({
   // the safe area value before open becomes false. This means we can use it directly
   // as the bottom inset without additional safe-area offsets for fromBottom elements.
 
+  // The keyboard offset is applied via transform using a CSS custom property
+  // (--virtual-keyboard-height) that is written directly by the keyboard handlers,
+  // bypassing React. This avoids per-frame re-renders during the spring animation.
+  const keyboardTransform = fromBottom ? 'translateY(calc(-1 * var(--virtual-keyboard-height, 0px)))' : undefined
+
   let top, bottom
 
   // Calculate `top` values for absolute positioning (emulating `position: fixed`)
@@ -68,11 +74,11 @@ const usePositionFixed = ({
       // We clamp this to document.body.scrollHeight so the element never extends past
       // the document boundary (e.g. when the page is shorter than the viewport).
       //
-      // Then subtract virtualKeyboard.height (which includes safe-area-bottom during
-      // the closing animation), the element's own height, and offset.
+      // Then subtract the element's own height and offset. The keyboard offset is
+      // handled by the transform.
       //
       const visibleBottom = Math.min(document.body.scrollHeight, scrollTop + innerHeight)
-      top = `${visibleBottom - virtualKeyboard.height - (height ?? 0) - offset}px`
+      top = `${visibleBottom - (height ?? 0) - offset}px`
     } else {
       // fromTop
       // Position the element at the top of the visible area.
@@ -85,9 +91,9 @@ const usePositionFixed = ({
   // Calculate values for normal `position: fixed`.
   if (position === 'fixed') {
     if (fromBottom) {
-      // virtualKeyboard.height already includes the safe-area-bottom inset during
-      // the closing animation, so no additional safe-area offset is needed.
-      bottom = `${virtualKeyboard.height + offset}px`
+      // The base position is anchored to the bottom edge with the given offset.
+      // The keyboard height offset is applied via transform for performance.
+      bottom = `${offset}px`
     } else {
       // fromTop
       // Normal fixed positioning anchored to the top — safe-area-top keeps the element
@@ -100,6 +106,7 @@ const usePositionFixed = ({
     position: position ?? 'fixed',
     top,
     bottom,
+    transform: keyboardTransform,
   }
 }
 

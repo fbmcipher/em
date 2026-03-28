@@ -131,6 +131,10 @@ const PopupBase = React.forwardRef<HTMLDivElement, PopupBaseProps>(
           padding,
           // disable swipe-to-dismiss when multicursor is active
           ...(!multicursor && useSwipeToDismissProps.style),
+          // Compose transforms from usePositionFixed (keyboard offset) and useSwipeToDismiss (drag)
+          transform: [positionFixedStyles.transform, !multicursor && useSwipeToDismissProps.style?.transform]
+            .filter(Boolean)
+            .join(' ') || undefined,
         }}
         onMouseOver={onMouseOver}
         onMouseLeave={onMouseLeave}
