@@ -5,5 +5,5 @@ export default interface VirtualKeyboardState {
   /** The height of the virtual keyboard in pixels. */
   height: number
   /** The source of the virtual keyboard state. */
-  source?: 'ios-capacitor' | 'ios-safari' | 'android-capacitor' | 'android-chrome'
+  source?: 'ios-capacitor' | 'ios-safari' | 'android-capacitor' | 'virtual-keyboard-api'
 }

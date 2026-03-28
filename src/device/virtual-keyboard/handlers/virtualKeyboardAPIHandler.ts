@@ -10,7 +10,7 @@ const onGeometryChange = () => {
   const { height } = navigator.virtualKeyboard.boundingRect
   const isOpen = height > 0
 
-  virtualKeyboardStore.update({ open: isOpen })
+  virtualKeyboardStore.update({ open: isOpen, source: 'virtual-keyboard-api' })
 
   controls?.stop()
 
@@ -20,10 +20,10 @@ const onGeometryChange = () => {
     damping: 125,
     mass: 1,
     onUpdate: value => {
-      virtualKeyboardStore.update({ height: value })
+      virtualKeyboardStore.update({ height: value, source: 'virtual-keyboard-api' })
     },
     onComplete: () => {
-      virtualKeyboardStore.update({ height })
+      virtualKeyboardStore.update({ height, source: 'virtual-keyboard-api' })
     },
   })
 }
