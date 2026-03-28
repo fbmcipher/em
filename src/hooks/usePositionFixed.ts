@@ -41,10 +41,10 @@ const usePositionFixed = ({
   bottom?: string
   transform?: string
 } => {
-  const virtualKeyboard = virtualKeyboardStore.useState()
+  const virtualKeyboardOpen = virtualKeyboardStore.useSelector(state => state.open)
 
   // On iOS Safari, emulate `position: fixed` using absolute positioning when the virtual keyboard is open.
-  const position = virtualKeyboard.open && isSafari() && !isCapacitor() ? 'absolute' : 'fixed'
+  const position = virtualKeyboardOpen && isSafari() && !isCapacitor() ? 'absolute' : 'fixed'
 
   // Only subscribe to scroll events when emulating with position: fixed. mode — in fixed mode, scroll position
   // is irrelevant and listening would cause unnecessary re-renders.
