@@ -8,4 +8,13 @@ const virtualKeyboardStore = reactMinistore<VirtualKeyboardState>({
   height: 0,
 })
 
+// Sync the store's height to a CSS custom property outside of React, so
+// per-frame spring updates drive the DOM without triggering re-renders.
+virtualKeyboardStore.subscribeSelector(
+  state => state.height,
+  height => {
+    document.documentElement.style.setProperty('--virtual-keyboard-height', `${height}px`)
+  },
+)
+
 export default virtualKeyboardStore
