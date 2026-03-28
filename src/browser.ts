@@ -11,7 +11,7 @@ export const isTouch =
 
 /** Returns true if the navigator platform contains 'Linux armv71'. */
 export const isAndroid =
-  (typeof navigator !== 'undefined' && navigator.platform === 'Linux armv7l') || Capacitor.getPlatform() === 'android'
+  (typeof navigator !== 'undefined' && navigator.userAgent.includes('Android')) || Capacitor.getPlatform() === 'android'
 
 /** Returns true if the navigator platform contains 'MacIntel'. */
 export const isMac = typeof navigator !== 'undefined' && navigator.platform === 'MacIntel'
