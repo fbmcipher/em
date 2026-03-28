@@ -1,13 +1,13 @@
-import { isAndroid, isCapacitor, isIOS } from '../../browser'
+import { isCapacitor, isIOS } from '../../browser'
 import virtualKeyboardStore from '../../stores/virtualKeyboardStore'
-import androidCapacitorHandler from './handlers/androidCapacitorHandler'
 import iOSCapacitorHandler from './handlers/iOSCapacitorHandler'
 import iOSSafariHandler from './handlers/iOSSafariHandler'
+import virtualKeyboardAPIHandler from './handlers/virtualKeyboardAPIHandler'
 
 /** Returns the appropriate virtual keyboard handler based on the platform. */
 const getHandler = () => {
   if (isCapacitor() && isIOS) return iOSCapacitorHandler
-  if (isCapacitor() && isAndroid) return androidCapacitorHandler
+  if ('virtualKeyboard' in navigator) return virtualKeyboardAPIHandler
   // fallback
   return iOSSafariHandler
 }
