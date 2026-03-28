@@ -12,6 +12,7 @@ const androidCapacitorHandler: VirtualKeyboardHandler = {
 
     let controls: AnimationPlaybackControls | null = null
 
+    /** Stops any in-flight spring animation. */
     const stopAnimation = () => {
       controls?.stop()
       controls = null

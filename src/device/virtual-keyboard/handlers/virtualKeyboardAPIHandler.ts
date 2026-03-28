@@ -4,6 +4,7 @@ import virtualKeyboardStore from '../../../stores/virtualKeyboardStore'
 
 let controls: AnimationPlaybackControls | null = null
 
+/** Handles geometrychange events from the VirtualKeyboard API. */
 const onGeometryChange = () => {
   if (!navigator.virtualKeyboard) return
   const { height } = navigator.virtualKeyboard.boundingRect
@@ -28,10 +29,9 @@ const onGeometryChange = () => {
 }
 
 /** A virtual keyboard handler that uses the VirtualKeyboard API.
- *  https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API
  *
- *  This API provides `geometrychange` events with the keyboard's bounding rect.
- *  A spring animation is applied to smooth the height transition. */
+ * This API provides `geometrychange` events with the keyboard's bounding rect.
+ * A spring animation is applied to smooth the height transition. */
 const virtualKeyboardAPIHandler: VirtualKeyboardHandler = {
   init: () => {
     if (!navigator.virtualKeyboard) return
