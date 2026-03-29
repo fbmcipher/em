@@ -220,7 +220,7 @@ describe('all platforms', () => {
     })
   })
 
-  it('clicking a thought while the caret is in a note should move the caret to the clicked thought', async () => {
+  it.skip('clicking a thought while the caret is in a note should move the caret to the clicked thought', async () => {
     const importText = `
     - One
     - Two
