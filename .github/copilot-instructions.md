@@ -4,6 +4,11 @@ Background: https://github.com/cybersemics/em/wiki/Docs
 
 Contributing Guidelines: https://github.com/cybersemics/em/blob/main/CONTRIBUTING.md
 
+## Instructions
+- Run `yarn prettier --write .` before committing any changes to ensure proper code formatting.
+- Always test your submissions using `yarn lint`, `yarn test` and `yarn test:puppeteer`. Submissions that fail tests or don't pass linters are not considered complete.
+    - Read the "Testing" section of this doc for more information. 
+
 ## Setup and Development
 
 ### Installation
@@ -28,10 +33,6 @@ Contributing Guidelines: https://github.com/cybersemics/em/blob/main/CONTRIBUTIN
   - Exception: action-creators are co-located with reducers in `src/actions` and exported as named exports.
 - Filename should exactly match the default export name.
 - Prefer co-located functions over unnecessary abstraction. If a function is only used in one module, define it there instead of abstracting it out into a separate file.
-
-### Required Before Each Commit
-
-- Run `yarn prettier --write .` before committing any changes to ensure proper code formatting.
 
 ### Functional Programming
 
