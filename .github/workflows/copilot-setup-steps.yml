@@ -3,6 +3,11 @@ name: 'Copilot Setup Steps'
 # Allow testing of the setup steps from your repository's "Actions" tab.
 on: workflow_dispatch
 
+permissions:
+  contents: write
+  actions: write
+  checks: read
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
