@@ -1,0 +1,293 @@
+Starting inline AI review...
+2026-03-29 21:25:55 | WARNING | REVIEW_DRY_RUN_COMMENT_GATEWAY | Running in DRY RUN mode — no comments will be posted to VCS
+2026-03-29 21:25:55 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1/comments?page=1&per_page=100 - Waiting for response
+2026-03-29 21:25:56 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1/comments?page=1&per_page=100 - Status 200
+2026-03-29 21:25:56 | INFO | GITHUB_VCS_CLIENT | Fetched inline comments for fbmcipher/em#1
+2026-03-29 21:25:56 | INFO | REVIEW_COMMENT_GATEWAY | Detected 0/9 AI inline comments
+2026-03-29 21:25:56 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1 - Waiting for response
+2026-03-29 21:25:56 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1 - Status 200
+2026-03-29 21:25:56 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1/files?page=1&per_page=100 - Waiting for response
+2026-03-29 21:25:57 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1/files?page=1&per_page=100 - Status 200
+2026-03-29 21:25:57 | INFO | GITHUB_VCS_CLIENT | Fetched PR info for fbmcipher/em#1
+2026-03-29 21:25:57 | INFO | INLINE_REVIEW_RUNNER | Starting inline review: 15 files changed
+2026-03-29 21:25:57 | INFO | REVIEW_SERVICE | Proceeding with 15 files after policy filter
+2026-03-29 21:25:57 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:25:57 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:25:57 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:25:57 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:25:57 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:25:57 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:25:57 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:25:58 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:25:59 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:26:00 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:26:00 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:26:00 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:26:02 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:26:03 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:26:05 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:26:05 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:26:05 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/@types/VirtualKeyboardState.ts
+2026-03-29 21:26:05 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:26:07 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:26:07 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:26:07 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/@types/VirtualKeyboardHandler.ts
+2026-03-29 21:26:07 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:26:10 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:26:10 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:26:26 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:26:26 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:26:26 | INFO | INLINE_REVIEW_RUNNER | Posting 1 inline comments to src/browser.ts
+2026-03-29 21:26:26 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/browser.ts:28:
+STYLE-002: The expression `Capacitor.getPlatform()` is called twice. Hoist it to a local variable to avoid the repeated call.
+
+```suggestion
+export const isCapacitor = () => {
+  const platform = Capacitor.getPlatform()
+  return platform === 'ios' || platform === 'android'
+}
+```
+
+#ai-review-inline
+2026-03-29 21:26:26 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:26:27 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:26:37 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:26:37 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:26:37 | INFO | INLINE_REVIEW_RUNNER | Posting 1 inline comments to src/device/virtual-keyboard/safeArea.ts
+2026-03-29 21:26:37 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/safeArea.ts:12:
+NAMING-006: File name must match the primary default export. The file is named 'safeArea.ts' but the default export is 'measureSafeAreaBottom'.
+
+#ai-review-inline
+2026-03-29 21:26:37 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:26:42 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:26:58 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:26:58 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:26:58 | INFO | INLINE_REVIEW_RUNNER | Posting 1 inline comments to src/components/PopupBase.tsx
+2026-03-29 21:26:58 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/components/PopupBase.tsx:70:
+DOCS-010: Comments should be placed above the line, not at the end. This comment is redundant with the one above and should be removed.
+
+```suggestion
+    }, [anchorFromBottom])
+```
+
+#ai-review-inline
+2026-03-29 21:26:58 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:27:00 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:27:00 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:27:00 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:27:00 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/stores/safariKeyboardStore.ts
+2026-03-29 21:27:00 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:27:01 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:27:05 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:27:05 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:27:05 | INFO | INLINE_REVIEW_RUNNER | Posting 1 inline comments to src/hooks/usePositionFixed.ts
+2026-03-29 21:27:05 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/hooks/usePositionFixed.ts:48:
+HYGIENE-006: Comment contains a typo and inaccuracy - 'position: fixed. mode' should be 'absolute mode'. The code uses position: absolute when emulating fixed positioning, and scroll events are only needed in absolute mode.
+
+```suggestion
+  // Only subscribe to scroll events in absolute mode — in fixed mode, scroll position
+  // is irrelevant and listening would cause unnecessary re-renders.
+```
+
+#ai-review-inline
+2026-03-29 21:27:05 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:27:05 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:27:15 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:27:15 | WARNING | LLM_JSON_PARSER | [InlineCommentListSchema] Raw JSON parse failed: 1 validation error for InlineCommentListSchema
+  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value="Looking at this diff, I ...estroy()` methods\n\n[]", input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid
+2026-03-29 21:27:15 | WARNING | LLM_JSON_PARSER | [InlineCommentListSchema] Sanitized JSON still invalid: 1 validation error for InlineCommentListSchema
+  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value="Looking at this diff, I ...troy()` methods\\n\\n[]", input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid
+2026-03-29 21:27:15 | ERROR | LLM_JSON_PARSER | [InlineCommentListSchema] No valid JSON found in output
+2026-03-29 21:27:15 | WARNING | INLINE_COMMENT_SERVICE | Failed to parse JSON, trying to extract first JSON array...
+2026-03-29 21:27:15 | INFO | INLINE_COMMENT_SERVICE | Successfully parsed JSON after extracting array from output
+2026-03-29 21:27:15 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/util/initEvents.ts
+2026-03-29 21:27:15 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:27:15 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:27:19 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:27:19 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:27:19 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/stores/virtualKeyboardStore.ts
+2026-03-29 21:27:25 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:27:25 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:27:25 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: yarn.lock
+2026-03-29 21:27:27 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:27:27 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:27:27 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/device/virtual-keyboard/index.ts
+2026-03-29 21:27:31 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:27:31 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:27:31 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/stores/viewport.ts
+2026-03-29 21:27:51 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:27:51 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:27:51 | INFO | INLINE_REVIEW_RUNNER | Posting 2 inline comments to src/device/virtual-keyboard/handlers/iOSSafariHandler.ts
+2026-03-29 21:27:51 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSSafariHandler.ts:38:
+STYLE-002: The spring animation options (type, stiffness, damping, mass) are duplicated in both the opening (lines 38-41) and closing (lines 54-57) animation branches. Extract them to a shared constant at module scope.
+
+#ai-review-inline
+2026-03-29 21:27:51 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSSafariHandler.ts:73:
+STRICT-004: The throttle duration 16.666 is a magic number. Use a named constant or the expression 1000 / 60 to clarify the intent (60fps frame duration).
+
+```suggestion
+}, 1000 / 60)
+```
+
+#ai-review-inline
+2026-03-29 21:28:09 | ERROR | REVIEW_DIRECT_LLM_GATEWAY | LLM request failed: 1 validation error for OpenRouterChatResponseSchema
+choices.0.message.content
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/string_type
+Traceback (most recent call last):
+
+  File "/Users/faiz/.local/bin/ai-review", line 8, in <module>
+    sys.exit(app())
+    │   │    └ <typer.main.Typer object at 0x109b0e510>
+    │   └ <built-in function exit>
+    └ <module 'sys' (built-in)>
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/typer/main.py", line 1135, in __call__
+    return get_command(self)(*args, **kwargs)
+           │           │      │       └ {}
+           │           │      └ ()
+           │           └ <typer.main.Typer object at 0x109b0e510>
+           └ <function get_command at 0x1081b2f20>
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/click/core.py", line 1485, in __call__
+    return self.main(*args, **kwargs)
+           │    │     │       └ {}
+           │    │     └ ()
+           │    └ <function TyperGroup.main at 0x1081b2840>
+           └ <TyperGroup >
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/typer/core.py", line 795, in main
+    return _main(
+           └ <function _main at 0x1081b14e0>
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/typer/core.py", line 188, in _main
+    rv = self.invoke(ctx)
+         │    │      └ <click.core.Context object at 0x109cf9a90>
+         │    └ <function Group.invoke at 0x108060400>
+         └ <TyperGroup >
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/click/core.py", line 1873, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+           │               │       │       │      └ <click.core.Context object at 0x109dbc410>
+           │               │       │       └ <function Command.invoke at 0x10805f1a0>
+           │               │       └ <TyperCommand run-inline>
+           │               └ <click.core.Context object at 0x109dbc410>
+           └ <function Group.invoke.<locals>._process_result at 0x109db87c0>
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/click/core.py", line 1269, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           │   │      │    │           │   └ {}
+           │   │      │    │           └ <click.core.Context object at 0x109dbc410>
+           │   │      │    └ <function run_inline at 0x109db8180>
+           │   │      └ <TyperCommand run-inline>
+           │   └ <function Context.invoke at 0x10805e3e0>
+           └ <click.core.Context object at 0x109dbc410>
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/click/core.py", line 824, in invoke
+    return callback(*args, **kwargs)
+           │         │       └ {}
+           │         └ ()
+           └ <function run_inline at 0x109db8180>
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/typer/main.py", line 1514, in wrapper
+    return callback(**use_params)
+           │          └ {}
+           └ <function run_inline at 0x109d87c40>
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/ai_review/cli/main.py", line 30, in run_inline
+    asyncio.run(run_inline_review_command())
+    │       │   └ <function run_inline_review_command at 0x109d87560>
+    │       └ <function run at 0x107e9c4a0>
+    └ <module 'asyncio' from '/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyn...
+
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object run_inline_review_command at 0x109cadc00>
+           │      └ <function Runner.run at 0x107f59bc0>
+           └ <asyncio.runners.Runner object at 0x109cf9d30>
+
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<run_inline_review_command() running at /Users/faiz/.local/pipx/venvs/xai-review/lib/python3...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x107f53600>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x109cf9d30>
+
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x107f53560>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x107f593a0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/base_events.py", line 2042, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x107e771a0>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x10a048040>()>
+
+  File "/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x10a048040>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x10a048040>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x10a048040>()>
+
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/ai_review/libs/asynchronous/gather.py", line 18, in wrap
+    return await coro
+                 └ <coroutine object InlineReviewRunner.process_file at 0x109ee7a70>
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/ai_review/services/review/runner/inline.py", line 56, in process_file
+    prompt_result = await self.review_llm_gateway.ask(prompt, prompt_system)
+                          │    │                  │   │       └ 'Return ONLY a valid JSON array of inline review comments.\n\nFormat:\n\n```json\n[\n  {\n    "file": "<relative_file_path>",...
+                          │    │                  │   └ 'You are a code review agent for a project called em. Your task is to catch mechanical, rule-based issues so the lead reviewe...
+                          │    │                  └ <function ReviewDirectLLMGateway.ask at 0x109beca40>
+                          │    └ <ai_review.services.review.gateway.review_direct_llm_gateway.ReviewDirectLLMGateway object at 0x109f65e80>
+                          └ <ai_review.services.review.runner.inline.InlineReviewRunner object at 0x109f66270>
+> File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/ai_review/services/review/gateway/review_direct_llm_gateway.py", line 26, in ask
+    result = await self.llm.chat(prompt, prompt_system)
+                   │    │   │    │       └ 'Return ONLY a valid JSON array of inline review comments.\n\nFormat:\n\n```json\n[\n  {\n    "file": "<relative_file_path>",...
+                   │    │   │    └ 'You are a code review agent for a project called em. Your task is to catch mechanical, rule-based issues so the lead reviewe...
+                   │    │   └ <function OpenRouterLLMClient.chat at 0x109b92660>
+                   │    └ <ai_review.services.llm.openrouter.client.OpenRouterLLMClient object at 0x109cfa510>
+                   └ <ai_review.services.review.gateway.review_direct_llm_gateway.ReviewDirectLLMGateway object at 0x109f65e80>
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/ai_review/services/llm/openrouter/client.py", line 25, in chat
+    response = await self.http_client.chat(request)
+                     │    │           │    └ OpenRouterChatRequestSchema(model='z-ai/glm-5', messages=[OpenRouterMessageSchema(role='system', content='Return ONLY a valid...
+                     │    │           └ <function OpenRouterHTTPClient.chat at 0x109b923e0>
+                     │    └ <ai_review.clients.openrouter.client.OpenRouterHTTPClient object at 0x109f64830>
+                     └ <ai_review.services.llm.openrouter.client.OpenRouterLLMClient object at 0x109cfa510>
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/ai_review/clients/openrouter/client.py", line 24, in chat
+    return OpenRouterChatResponseSchema.model_validate_json(response.text)
+           │                            │                   │        └ <property object at 0x109631530>
+           │                            │                   └ <Response [200 OK]>
+           │                            └ <classmethod(<function BaseModel.model_validate_json at 0x108ac4cc0>)>
+           └ <class 'ai_review.clients.openrouter.schema.OpenRouterChatResponseSchema'>
+  File "/Users/faiz/.local/pipx/venvs/xai-review/lib/python3.13/site-packages/pydantic/main.py", line 766, in model_validate_json
+    return cls.__pydantic_validator__.validate_json(
+           │   │                      └ <method 'validate_json' of 'pydantic_core._pydantic_core.SchemaValidator' objects>
+           │   └ SchemaValidator(title="OpenRouterChatResponseSchema", validator=Model(
+           │         ModelValidator {
+           │             revalidate: Never,
+           │           ...
+           └ <class 'ai_review.clients.openrouter.schema.OpenRouterChatResponseSchema'>
+
+pydantic_core._pydantic_core.ValidationError: 1 validation error for OpenRouterChatResponseSchema
+choices.0.message.content
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/string_type
+2026-03-29 21:28:09 | WARNING | INLINE_COMMENT_SERVICE | LLM returned empty string for inline review
+2026-03-29 21:28:09 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: package.json
+2026-03-29 21:28:39 | WARNING | COST_SERVICE | No pricing found for model='z-ai/glm-5', skipping cost calculation
+2026-03-29 21:28:39 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:28:39 | INFO | INLINE_REVIEW_RUNNER | Posting 2 inline comments to src/device/virtual-keyboard/handlers/iOSCapacitorHandler.ts
+2026-03-29 21:28:39 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSCapacitorHandler.ts:16:
+DOCS-009: Use `//` for inline comments inside function bodies, not JSDoc `/** */` which is reserved for function and type declarations.
+
+```suggestion
+    // Provides control over the spring animation.
+```
+
+#ai-review-inline
+2026-03-29 21:28:39 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSCapacitorHandler.ts:36:
+STYLE-002: Extract the duplicated spring animation options (type, stiffness, damping, mass) to a module-level constant and use spread syntax in both animate calls to avoid repetition between keyboardWillShow and keyboardWillHide handlers.
+
+#ai-review-inline
+2026-03-29 21:28:39 | INFO | REVIEW_SERVICE | No cost data collected for this review
+AI review completed successfully!

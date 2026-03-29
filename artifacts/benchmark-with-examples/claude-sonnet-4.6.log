@@ -1,0 +1,279 @@
+Starting inline AI review...
+2026-03-29 21:41:54 | WARNING | REVIEW_DRY_RUN_COMMENT_GATEWAY | Running in DRY RUN mode — no comments will be posted to VCS
+2026-03-29 21:41:54 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1/comments?page=1&per_page=100 - Waiting for response
+2026-03-29 21:41:54 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1/comments?page=1&per_page=100 - Status 200
+2026-03-29 21:41:54 | INFO | GITHUB_VCS_CLIENT | Fetched inline comments for fbmcipher/em#1
+2026-03-29 21:41:54 | INFO | REVIEW_COMMENT_GATEWAY | Detected 0/9 AI inline comments
+2026-03-29 21:41:54 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1 - Waiting for response
+2026-03-29 21:41:54 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1 - Status 200
+2026-03-29 21:41:54 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1/files?page=1&per_page=100 - Waiting for response
+2026-03-29 21:41:55 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1/files?page=1&per_page=100 - Status 200
+2026-03-29 21:41:55 | INFO | GITHUB_VCS_CLIENT | Fetched PR info for fbmcipher/em#1
+2026-03-29 21:41:55 | INFO | INLINE_REVIEW_RUNNER | Starting inline review: 15 files changed
+2026-03-29 21:41:55 | INFO | REVIEW_SERVICE | Proceeding with 15 files after policy filter
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:58 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:41:58 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:41:58 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:41:58 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:41:58 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: package.json
+2026-03-29 21:41:58 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:58 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:41:59 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:41:59 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:41:59 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/@types/VirtualKeyboardHandler.ts
+2026-03-29 21:41:59 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:59 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:00 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:00 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:00 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:42:00 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:00 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/@types/VirtualKeyboardState.ts
+2026-03-29 21:42:00 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:01 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:01 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:42:01 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:01 | INFO | INLINE_REVIEW_RUNNER | Posting 1 inline comments to src/browser.ts
+2026-03-29 21:42:01 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/browser.ts:28:
+STYLE-001: `Capacitor.getPlatform()` is called twice; inline a single call or extract to a variable to avoid the redundant call.
+
+```suggestion
+export const isCapacitor = () => { const platform = Capacitor.getPlatform(); return platform === 'ios' || platform === 'android' }
+```
+
+#ai-review-inline
+2026-03-29 21:42:01 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:03 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:03 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:04 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:06 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:42:06 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:06 | INFO | INLINE_REVIEW_RUNNER | Posting 2 inline comments to src/components/PopupBase.tsx
+2026-03-29 21:42:06 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/components/PopupBase.tsx:70:
+DOCS-001: The comment '// measure on mount' restates what the empty dependency array already communicates; it should explain WHY useLayoutEffect is used instead of useEffect (to avoid a visible flash/layout shift).
+
+```suggestion
+    }, [anchorFromBottom]) // useLayoutEffect avoids a visible flash by measuring before the browser paints
+```
+
+#ai-review-inline
+2026-03-29 21:42:06 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/components/PopupBase.tsx:57:
+STYLE-001: `height` is initialized to `0` but the previous value was `50`; if this is intentional (e.g., to avoid a layout shift on first render), a comment explaining the change from 50 to 0 is needed per DOCS-005/DOCS-012, but more mechanically the magic literal `0` should use a named constant or at least an inline comment.
+
+#ai-review-inline
+2026-03-29 21:42:06 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:07 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:07 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:42:07 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:07 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/stores/safariKeyboardStore.ts
+2026-03-29 21:42:07 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:08 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:42:08 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:08 | INFO | INLINE_REVIEW_RUNNER | Posting 5 inline comments to src/device/virtual-keyboard/handlers/iOSSafariHandler.ts
+2026-03-29 21:42:08 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSSafariHandler.ts:5:
+ARCH-017: In thunk action-creators, use getState from thunk arguments, not by importing store directly. Here the global app store is imported and called directly instead of using a thunk-provided getState.
+
+#ai-review-inline
+2026-03-29 21:42:08 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSSafariHandler.ts:28:
+STYLE-001: `keyboardIsVisible` is a single-use variable that could be inlined directly at the point of use on line 30.
+
+```suggestion
+    if (isKeyboardOpen === true && !virtualKeyboardStore.getState().open) {
+```
+
+#ai-review-inline
+2026-03-29 21:42:08 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSSafariHandler.ts:73:
+STRICT-004: The magic number 16.666 should be replaced with a named constant (e.g., representing one frame at 60fps) to clarify intent.
+
+#ai-review-inline
+2026-03-29 21:42:08 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSSafariHandler.ts:85:
+STYLE-002: The expression `window.visualViewport || window` is duplicated on lines 80 and 85; it should be factored out into a shared variable or helper to avoid repetition.
+
+#ai-review-inline
+2026-03-29 21:42:08 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSSafariHandler.ts:31:
+DOCS-001: The comment '// Stop any existing animation to prevent conflicts' (repeated on lines 31 and 47) merely restates what the code does; it should explain why stopping is necessary at this point.
+
+#ai-review-inline
+2026-03-29 21:42:08 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:09 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:42:09 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:09 | INFO | INLINE_REVIEW_RUNNER | Posting 5 inline comments to src/device/virtual-keyboard/handlers/iOSCapacitorHandler.ts
+2026-03-29 21:42:09 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSCapacitorHandler.ts:17:
+STRICT-010: Use const instead of let where possible. `controls` is reassigned, so let is technically required here, but the pattern of a mutable closure variable tracking animation state is worth flagging. However, since it is genuinely reassigned, this is acceptable — no violation.
+
+#ai-review-inline
+2026-03-29 21:42:09 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSCapacitorHandler.ts:21:
+STRICT-001: `|| 0` is a redundant fallback if `keyboardHeight` is typed as a number; verify the type. If it can be undefined/null, this is fine, but if it is always a number, the `|| 0` is redundant noise.
+
+#ai-review-inline
+2026-03-29 21:42:09 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSCapacitorHandler.ts:37:
+STRICT-004: Magic number literals 3600, 220, and 1.2 are used for spring physics parameters without named constants. These should be extracted to named constants at module scope.
+
+```suggestion
+const SPRING_STIFFNESS = 3600
+const SPRING_DAMPING = 220
+const SPRING_MASS = 1.2
+```
+
+#ai-review-inline
+2026-03-29 21:42:09 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSCapacitorHandler.ts:30:
+DOCS-001: The comment 'Stop any existing animation to prevent conflicts' restates what the code does (controls?.stop()) rather than explaining why conflicts would occur or what the consequence of not stopping would be.
+
+```suggestion
+// Stop any in-progress animation so the new target height takes over immediately without fighting the previous spring
+```
+
+#ai-review-inline
+2026-03-29 21:42:09 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSCapacitorHandler.ts:35:
+ARCH-030: The spring animation configuration (stiffness, damping, mass, type) is duplicated verbatim between the keyboardWillShow (line 35-43) and keyboardWillHide (line 61-69) handlers. Extract into a shared constant to avoid duplication.
+
+```suggestion
+const SPRING_CONFIG = {
+  type: 'spring',
+  stiffness: SPRING_STIFFNESS,
+  damping: SPRING_DAMPING,
+  mass: SPRING_MASS,
+} as const
+```
+
+#ai-review-inline
+2026-03-29 21:42:09 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:09 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:42:09 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:09 | INFO | INLINE_REVIEW_RUNNER | Posting 2 inline comments to src/device/virtual-keyboard/safeArea.ts
+2026-03-29 21:42:09 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/safeArea.ts:6:
+ARCH-023: DOM initialization code (document.createElement, document.body.appendChild) is executed at call-time inside a utility function, but this function is called at module scope or in hot paths — the DOM manipulation pattern here bypasses the project's device abstraction layer (ARCH-013) and creates a temporary DOM node on every call, which is a performance concern (PERF-017).
+
+#ai-review-inline
+2026-03-29 21:42:09 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/safeArea.ts:5:
+PANDACSS-007: The style is set via direct DOM style assignment (`div.style.cssText`) rather than using the project's CSS abstraction; while this is a measurement utility (not a component), the `visibility:hidden` approach mounts a real DOM node on every call — consider using a cached/singleton element to avoid repeated DOM mutations.
+
+#ai-review-inline
+2026-03-29 21:42:11 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:42:11 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:11 | INFO | INLINE_REVIEW_RUNNER | Posting 3 inline comments to src/device/virtual-keyboard/index.ts
+2026-03-29 21:42:11 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/index.ts:12:
+DOCS-001: The comment '// fallback' merely restates what the else branch does without explaining why iOSSafariHandler is the fallback or under what conditions this path is taken.
+
+```suggestion
+// fall back to Safari handler for non-Capacitor iOS and other platforms
+```
+
+#ai-review-inline
+2026-03-29 21:42:11 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/index.ts:21:
+DOCS-001: The comment '// fallback' merely restates what the else branch does without explaining why iOSSafariHandler is the fallback or under what conditions this path is taken.
+
+```suggestion
+// fall back to Safari handler for non-Capacitor iOS and other platforms
+```
+
+#ai-review-inline
+2026-03-29 21:42:11 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/index.ts:18:
+STYLE-002: The condition `isCapacitor() && isIOS` is duplicated across both `init` and `destroy`; the shared expression should be factored out to a single constant at module scope.
+
+```suggestion
+const isIOSCapacitor = isCapacitor() && isIOS
+
+const virtualKeyboardHandler = {
+  init: () => {
+    if (isIOSCapacitor) {
+      iOSCapacitorHandler.init()
+    } else {
+      iOSSafariHandler.init()
+    }
+  },
+  destroy: () => {
+    if (isIOSCapacitor) {
+      iOSCapacitorHandler.destroy()
+    } else {
+      iOSSafariHandler.destroy()
+    }
+  },
+}
+```
+
+#ai-review-inline
+2026-03-29 21:42:11 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:11 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:42:11 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:11 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/stores/viewport.ts
+2026-03-29 21:42:13 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:13 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:14 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:42:14 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:14 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/stores/virtualKeyboardStore.ts
+2026-03-29 21:42:17 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:17 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:42:17 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:17 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: yarn.lock
+2026-03-29 21:42:17 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:42:17 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:17 | INFO | INLINE_REVIEW_RUNNER | Posting 5 inline comments to src/hooks/usePositionFixed.ts
+2026-03-29 21:42:17 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/hooks/usePositionFixed.ts:48:
+DOCS-001: Comment restates what the code does ('Only subscribe to scroll events when emulating with position: fixed. mode — in fixed mode, scroll position is irrelevant') rather than explaining why this matters (unnecessary re-renders are the concern, but the phrasing is still mostly descriptive). Also contains a typo: 'fixed. mode' should be 'fixed mode'.
+
+```suggestion
+  // Avoid subscribing to scroll events in fixed mode — scroll position is irrelevant and would cause unnecessary re-renders.
+```
+
+#ai-review-inline
+2026-03-29 21:42:17 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/hooks/usePositionFixed.ts:22:
+DOCS-001: The old JSDoc comment ('Emulates position fixed on mobile Safari with positon absolute. Returns { position, top, bottom } in absolute mode.') contained a typo ('positon'). The new JSDoc is much improved, but line 22 in the original (now removed) had 'positon' — flagging for awareness that the replacement is correct.
+
+#ai-review-inline
+2026-03-29 21:42:17 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/hooks/usePositionFixed.ts:46:
+ARCH-005: The condition `virtualKeyboard.open && isSafari() && !isCapacitor()` applies the absolute-positioning workaround only on Safari non-Capacitor, which is correct. However, the previous code used `safariKeyboardStore` (which already encapsulated the platform check), and the new code re-implements the platform detection inline. Consider whether this platform-detection logic should be encapsulated in `virtualKeyboardStore` or a helper rather than scattered at the call site.
+
+#ai-review-inline
+2026-03-29 21:42:17 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/hooks/usePositionFixed.ts:53:
+STRICT-010: `let` is used for `top` and `bottom` variables. The project convention is to prefer `const` over `let`.
+
+#ai-review-inline
+2026-03-29 21:42:17 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/hooks/usePositionFixed.ts:80:
+STYLE-003: The two `if (position === 'absolute')` and `if (position === 'fixed')` blocks are mutually exclusive but written as separate if-statements rather than an if/else. This could be combined into a single if/else block to make the mutual exclusivity explicit.
+
+```suggestion
+  if (position === 'absolute') {
+    if (fromBottom) {
+      const visibleBottom = Math.min(document.body.scrollHeight, scrollTop + innerHeight - virtualKeyboard.height)
+      top = `calc(${visibleBottom - (height ?? 0) - offset}px - ${token('spacing.safeAreaBottom')})`
+    } else {
+      top = `calc(${scrollTop}px + ${token('spacing.safeAreaTop')} + ${offset}px)`
+    }
+  } else {
+    if (fromBottom) {
+      bottom = `calc(${token('spacing.safeAreaBottom')} + ${virtualKeyboard.height}px + ${offset}px)`
+    } else {
+      top = `calc(${token('spacing.safeAreaTop')} + ${offset}px)`
+    }
+  }
+```
+
+#ai-review-inline
+2026-03-29 21:42:23 | WARNING | COST_SERVICE | No pricing found for model='anthropic/claude-sonnet-4.6', skipping cost calculation
+2026-03-29 21:42:23 | WARNING | LLM_JSON_PARSER | [InlineCommentListSchema] Raw JSON parse failed: 1 validation error for InlineCommentListSchema
+  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value="js\nif (isTouch && isAnd...KeyboardVisibility()\n}", input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid
+2026-03-29 21:42:23 | WARNING | LLM_JSON_PARSER | [InlineCommentListSchema] Sanitized JSON still invalid: 1 validation error for InlineCommentListSchema
+  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value="js\\nif (isTouch && isAn...eyboardVisibility()\\n}", input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/json_invalid
+2026-03-29 21:42:23 | ERROR | LLM_JSON_PARSER | [InlineCommentListSchema] No valid JSON found in output
+2026-03-29 21:42:23 | WARNING | INLINE_COMMENT_SERVICE | Failed to parse JSON, trying to extract first JSON array...
+2026-03-29 21:42:23 | INFO | INLINE_COMMENT_SERVICE | Successfully parsed JSON after extracting array from output
+2026-03-29 21:42:23 | INFO | INLINE_REVIEW_RUNNER | Posting 1 inline comments to src/util/initEvents.ts
+2026-03-29 21:42:23 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/util/initEvents.ts:381:
+DOCS-001: Comment restates the code ('Initialize virtual keyboard handlers') instead of explaining intent or what the handler manages (e.g., Android WebView visual viewport resize for keyboard detection).
+
+```suggestion
+  // Listen for virtual keyboard open/close events to adjust layout (e.g., Android WebView visual viewport resize)
+```
+
+#ai-review-inline
+2026-03-29 21:42:23 | INFO | REVIEW_SERVICE | No cost data collected for this review
+AI review completed successfully!

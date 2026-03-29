@@ -1,0 +1,195 @@
+Starting inline AI review...
+2026-03-29 21:41:54 | WARNING | REVIEW_DRY_RUN_COMMENT_GATEWAY | Running in DRY RUN mode — no comments will be posted to VCS
+2026-03-29 21:41:54 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1/comments?page=1&per_page=100 - Waiting for response
+2026-03-29 21:41:54 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1/comments?page=1&per_page=100 - Status 200
+2026-03-29 21:41:54 | INFO | GITHUB_VCS_CLIENT | Fetched inline comments for fbmcipher/em#1
+2026-03-29 21:41:54 | INFO | REVIEW_COMMENT_GATEWAY | Detected 0/9 AI inline comments
+2026-03-29 21:41:54 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1 - Waiting for response
+2026-03-29 21:41:54 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1 - Status 200
+2026-03-29 21:41:54 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1/files?page=1&per_page=100 - Waiting for response
+2026-03-29 21:41:55 | INFO | GITHUB_HTTP_CLIENT | GET https://api.github.com/repos/fbmcipher/em/pulls/1/files?page=1&per_page=100 - Status 200
+2026-03-29 21:41:55 | INFO | GITHUB_VCS_CLIENT | Fetched PR info for fbmcipher/em#1
+2026-03-29 21:41:55 | INFO | INLINE_REVIEW_RUNNER | Starting inline review: 15 files changed
+2026-03-29 21:41:55 | INFO | REVIEW_SERVICE | Proceeding with 15 files after policy filter
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:41:55 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:00 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:00 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:05 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:42:05 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:05 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/@types/VirtualKeyboardHandler.ts
+2026-03-29 21:42:05 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:05 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:05 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:05 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:05 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:06 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:08 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:42:08 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:08 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: package.json
+2026-03-29 21:42:08 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:10 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:11 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:17 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:42:17 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:17 | INFO | INLINE_REVIEW_RUNNER | Posting 1 inline comments to src/browser.ts
+2026-03-29 21:42:17 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/browser.ts:28:
+STYLE-002: Factor out the repeated `Capacitor.getPlatform()` call.
+
+```suggestion
+export const isCapacitor = () => ['ios', 'android'].includes(Capacitor.getPlatform())
+```
+
+#ai-review-inline
+2026-03-29 21:42:17 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:18 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:42:18 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:18 | INFO | INLINE_REVIEW_RUNNER | Posting 1 inline comments to src/device/virtual-keyboard/safeArea.ts
+2026-03-29 21:42:18 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/safeArea.ts:12:
+NAMING-006 Naming – file name must match the primary default export: The default export `measureSafeAreaBottom` does not match the filename `safeArea.ts`.
+
+#ai-review-inline
+2026-03-29 21:42:18 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:21 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:22 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:42:22 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:22 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/stores/safariKeyboardStore.ts
+2026-03-29 21:42:22 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:22 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:42:22 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:22 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/@types/VirtualKeyboardState.ts
+2026-03-29 21:42:22 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:22 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:27 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:27 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:30 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:42:30 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:30 | INFO | INLINE_REVIEW_RUNNER | Posting 3 inline comments to src/device/virtual-keyboard/handlers/iOSCapacitorHandler.ts
+2026-03-29 21:42:30 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSCapacitorHandler.ts:16:
+DOCS-009: Use `//` for inline comments; reserve `/** */` for function and type declarations.
+
+```suggestion
+    // Provides control over the spring animation.
+```
+
+#ai-review-inline
+2026-03-29 21:42:30 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSCapacitorHandler.ts:36:
+STYLE-012: Declare static constants at module scope. Extract the spring configuration object to avoid recreating it and duplicating it.
+
+#ai-review-inline
+2026-03-29 21:42:30 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSCapacitorHandler.ts:47:
+STYLE-001: Inline single-use variables (`rawHeight`); do not create unnecessary intermediates.
+
+#ai-review-inline
+2026-03-29 21:42:30 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:34 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:34 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:42:34 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:34 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/stores/virtualKeyboardStore.ts
+2026-03-29 21:42:34 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Waiting for response
+2026-03-29 21:42:36 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:42:36 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:36 | INFO | INLINE_REVIEW_RUNNER | Posting 3 inline comments to src/device/virtual-keyboard/index.ts
+2026-03-29 21:42:36 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/index.ts:6:
+STYLE-002: Factor out the repeated platform check by selecting the handler once at module scope (e.g., `const virtualKeyboardHandler = isCapacitor() && isIOS ? iOSCapacitorHandler : iOSSafariHandler`).
+
+#ai-review-inline
+2026-03-29 21:42:36 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/index.ts:7:
+DOCS-001: This comment merely restates the method name and adds no value.
+
+#ai-review-inline
+2026-03-29 21:42:36 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/index.ts:16:
+DOCS-001: This comment merely restates the method name and adds no value.
+
+#ai-review-inline
+2026-03-29 21:42:41 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:42:41 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:41 | INFO | INLINE_REVIEW_RUNNER | Posting 3 inline comments to src/components/PopupBase.tsx
+2026-03-29 21:42:42 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/components/PopupBase.tsx:65:
+DOCS-001: Inline comments must explain intent, not restate what the code does.
+
+#ai-review-inline
+2026-03-29 21:42:42 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/components/PopupBase.tsx:67:
+STYLE-014: Invert the guard condition and return early rather than wrapping the entire effect body in an if-block.
+
+#ai-review-inline
+2026-03-29 21:42:42 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/components/PopupBase.tsx:70:
+DOCS-010: Place comments above the code line rather than at the end of the line.
+
+```suggestion
+    // measure on mount
+    }, [anchorFromBottom])
+```
+
+#ai-review-inline
+2026-03-29 21:42:42 | INFO | OPENROUTER_HTTP_CLIENT | POST https://openrouter.ai/api/v1/chat/completions - Status 200
+2026-03-29 21:42:45 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:42:45 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:45 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: yarn.lock
+2026-03-29 21:42:59 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:42:59 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:42:59 | INFO | INLINE_REVIEW_RUNNER | Posting 1 inline comments to src/util/initEvents.ts
+2026-03-29 21:42:59 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/util/initEvents.ts:381:
+This comment merely restates the code below it; comments should explain intent, not what the code does (DOCS-001).
+
+#ai-review-inline
+2026-03-29 21:43:03 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:43:03 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:43:03 | INFO | INLINE_REVIEW_RUNNER | No inline comments for file: src/stores/viewport.ts
+2026-03-29 21:43:05 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:43:05 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:43:05 | INFO | INLINE_REVIEW_RUNNER | Posting 3 inline comments to src/hooks/usePositionFixed.ts
+2026-03-29 21:43:05 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/hooks/usePositionFixed.ts:60:
+DOCS-001: This comment restates the code's calculation step-by-step instead of explaining the intent.
+
+#ai-review-inline
+2026-03-29 21:43:05 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/hooks/usePositionFixed.ts:69:
+REACT-006: Do not query the DOM (document.body.scrollHeight) in the render body; use useLayoutEffect or a store value to avoid layout thrashing.
+
+#ai-review-inline
+2026-03-29 21:43:05 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/hooks/usePositionFixed.ts:80:
+HYGIENE-006: Fix typo in comment (calculates both top and bottom, not just top).
+
+```suggestion
+  // Calculate `top` and `bottom` values for normal `position: fixed`.
+```
+
+#ai-review-inline
+2026-03-29 21:43:06 | WARNING | COST_SERVICE | No pricing found for model='google/gemini-3.1-pro-preview', skipping cost calculation
+2026-03-29 21:43:06 | INFO | LLM_JSON_PARSER | [InlineCommentListSchema] Successfully parsed
+2026-03-29 21:43:06 | INFO | INLINE_REVIEW_RUNNER | Posting 6 inline comments to src/device/virtual-keyboard/handlers/iOSSafariHandler.ts
+2026-03-29 21:43:06 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSSafariHandler.ts:20:
+Inline this single-use variable directly into the `targetHeight` calculation (STYLE-001).
+
+#ai-review-inline
+2026-03-29 21:43:06 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSSafariHandler.ts:27:
+Inline this single-use variable directly at the point of use (STYLE-001).
+
+#ai-review-inline
+2026-03-29 21:43:06 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSSafariHandler.ts:28:
+Remove the redundant `=== true` check (STRICT-001).
+
+```suggestion
+    const keyboardIsVisible = isKeyboardOpen
+```
+
+#ai-review-inline
+2026-03-29 21:43:06 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSSafariHandler.ts:37:
+Factor out the shared spring animation configuration duplicated across these conditional branches (STYLE-002).
+
+#ai-review-inline
+2026-03-29 21:43:06 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSSafariHandler.ts:39:
+Replace hardcoded numeric literals for spring physics with named constants (STRICT-004).
+
+#ai-review-inline
+2026-03-29 21:43:06 | INFO | REVIEW_DRY_RUN_COMMENT_GATEWAY | [dry-run] Would create inline comment for src/device/virtual-keyboard/handlers/iOSSafariHandler.ts:73:
+Replace the hardcoded numeric literal 16.666 with a named constant (STRICT-004).
+
+#ai-review-inline
+2026-03-29 21:43:06 | INFO | REVIEW_SERVICE | No cost data collected for this review
+AI review completed successfully!
