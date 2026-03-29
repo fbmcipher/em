@@ -15,28 +15,30 @@ This skill triggers and monitors the repository's CI workflows using GitHub Acti
 | `lint.yml` | Lint | `yarn lint` (ESLint + TypeScript type checking) |
 | `puppeteer.yml` | Puppeteer | `yarn test:puppeteer` (browser E2E tests with image snapshots) |
 
-## How to Run Tests
+All three workflows support `workflow_dispatch`.
 
-### 1. Trigger the workflows
+## Step 1: TRIGGER the workflows FIRST
 
-Use `actions_run_trigger` to dispatch the workflows you need on the current branch:
+**IMPORTANT: Do NOT use `actions_list` to look for existing runs. Always trigger new runs.**
 
-- For unit tests: trigger `test.yml`
-- For linting: trigger `lint.yml`
-- For E2E browser tests: trigger `puppeteer.yml`
+Use `actions_run_trigger` to dispatch each workflow on the current branch. When verifying a code change, trigger **all three** workflows:
 
-When verifying a code change, trigger **all three** workflows in parallel unless you have a specific reason to run only one.
+```
+actions_run_trigger({ method: "trigger_workflow", owner: "<owner>", repo: "em", workflow_id: "test.yml", ref: "<current-branch>" })
+actions_run_trigger({ method: "trigger_workflow", owner: "<owner>", repo: "em", workflow_id: "lint.yml", ref: "<current-branch>" })
+actions_run_trigger({ method: "trigger_workflow", owner: "<owner>", repo: "em", workflow_id: "puppeteer.yml", ref: "<current-branch>" })
+```
 
-### 2. Monitor the runs
+## Step 2: Wait, then poll for results
 
-Use `actions_list` to list recent workflow runs for this repository filtered by branch. Poll until the runs complete.
+After triggering, wait 10 seconds, then use `actions_list` to list workflow runs filtered by the current branch. Poll until all runs reach a terminal status (`completed`, `failure`, `cancelled`).
 
-### 3. Check results
+## Step 3: Check results
 
 - If all runs succeed, report that tests passed.
 - If any run fails, use `get_job_logs` to retrieve the logs for the failed jobs.
 
-### 4. Diagnose failures
+## Step 4: Diagnose failures
 
 When a workflow fails:
 
@@ -50,5 +52,3 @@ When a workflow fails:
 
 - All workflows use Node.js 22 and Yarn.
 - The Puppeteer workflow requires a build step (`yarn build`) before tests run, so it takes longer.
-- The Test and Puppeteer workflows support `workflow_dispatch` and can be triggered on any branch.
-- The Lint workflow triggers on push/PR only — it does not have `workflow_dispatch`, so it cannot be manually triggered. Check existing runs instead.
