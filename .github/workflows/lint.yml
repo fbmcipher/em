@@ -1,17 +1,10 @@
-name: Test
+name: Lint
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - '**'
   workflow_dispatch:
-    inputs:
-      rerun_id:
-        description: 'Optional ID for tracking repeated runs'
-        required: false
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -20,7 +13,7 @@ env:
 
 jobs:
   run:
-    name: Test
+    name: Lint
     runs-on: ubuntu-latest
 
     steps:
@@ -38,5 +31,5 @@ jobs:
       - name: Install npm dependencies
         run: yarn
 
-      - name: Test
-        run: yarn test
+      - name: Lint
+        run: yarn lint
