@@ -1,0 +1,3 @@
+prompt:
+  inline_prompt_files:
+    - .agents/code-review/inline.md
