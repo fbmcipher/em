@@ -31,7 +31,7 @@ type SidebarSection = {
 /** All available sidebar sections. */
 const SECTIONS: SidebarSection[] = [
   { id: 'favorites', label: 'Favorites' },
-  { id: 'recentlyEdited', label: 'Recently Edited' },
+  { id: 'recentlyEdited', label: 'Recents' },
   { id: 'recentlyDeleted', label: 'Recently Deleted' },
 ]
 
