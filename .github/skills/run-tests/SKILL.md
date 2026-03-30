@@ -1,73 +1,43 @@
 ---
 name: run-tests
-description: "Run the repository's test and lint workflows via GitHub Actions and monitor the results. Use this skill when you need to verify that code changes pass tests, check lint results, or debug CI failures."
+description: "Run the repository's tests and linter directly in the shell. Use this skill after every code change to verify tests pass, check lint results, or debug test failures."
 ---
 
 # Run Tests
 
-This skill triggers and monitors the repository's CI workflows.
+Run tests and linting directly in the shell. The Node.js environment and dependencies are already set up by copilot-setup-steps.
 
-## Available Workflows
+## Commands
 
-| Workflow file | Name | What it runs |
-|---|---|---|
-| `test.yml` | Test | `yarn test` (Vitest unit tests) |
-| `lint.yml` | Lint | `yarn lint` (ESLint + TypeScript type checking) |
-| `puppeteer.yml` | Puppeteer | `yarn test:puppeteer` (browser E2E tests with image snapshots) |
-
-All three workflows support `workflow_dispatch` and trigger on `pull_request`.
-
-## Step 1: TRIGGER the workflows
-
-**Always trigger new runs. Do not just list existing runs.**
-
-Use `gh workflow run` to dispatch each workflow on the current branch:
+Run **all three** after every code change:
 
 ```sh
-BRANCH=$(git branch --show-current)
-gh workflow run test.yml --ref "$BRANCH"
-gh workflow run lint.yml --ref "$BRANCH"
-gh workflow run puppeteer.yml --ref "$BRANCH"
+yarn test
+yarn lint
+yarn test:puppeteer
 ```
 
-When verifying a code change, trigger **all three**.
+- `yarn test` — Vitest unit tests
+- `yarn lint` — ESLint + TypeScript type checking
+- `yarn test:puppeteer` — Puppeteer browser E2E tests (requires `yarn build` first)
 
-**Fallback:** If `gh` is not authenticated, push your changes and create/update a PR instead — the `pull_request` trigger will start all three workflows automatically.
+## Workflow
 
-## Step 2: Poll for results
+1. Make a code change.
+2. Run `yarn test` and `yarn lint`. These are fast — run them first.
+3. If unit tests or lint fail, fix the issues before proceeding.
+4. Run `yarn build && yarn test:puppeteer` for E2E tests. These are slower.
+5. If E2E tests fail, fix and re-run.
+6. Only consider the change complete when all three pass.
 
-Wait ~15 seconds for runs to register, then poll:
+## Diagnosing Failures
 
-```sh
-gh run list --branch "$BRANCH" --limit 10
-```
-
-Or use the `actions_list` MCP tool to list workflow runs filtered by branch. Poll until all three runs (Test, Lint, Puppeteer) reach a terminal status.
-
-The Test and Lint runs take a few minutes. Puppeteer takes longer because it builds first.
-
-## Step 3: Check results
-
-- If all runs succeed, report that tests passed.
-- If any run fails, get the logs:
-
-```sh
-gh run view <run-id> --log-failed
-```
-
-Or use the `get_job_logs` MCP tool.
-
-## Step 4: Diagnose failures
-
-When a workflow fails:
-
-1. Get the failed job logs (see Step 3).
-2. Look for the failing test name and error message.
-3. For **unit test** failures: the log will show the Vitest output with the failing test file and assertion.
-4. For **lint** failures: the log will show ESLint errors or TypeScript type errors.
-5. For **Puppeteer** failures: the log will show the failing E2E test. Image snapshot diffs are uploaded as artifacts — check with `actions_get`.
+- **Unit test failures**: Vitest output shows the failing test file, test name, and assertion diff.
+- **Lint failures**: Output shows ESLint errors or TypeScript type errors with file paths and line numbers.
+- **Puppeteer failures**: Output shows the failing E2E test name and error. Image snapshot mismatches will show expected vs. received paths.
 
 ## Notes
 
-- All workflows use Node.js 22 and Yarn.
-- The Puppeteer workflow requires a build step (`yarn build`) before tests run, so it takes longer.
+- All commands run in the project root directory.
+- The Puppeteer E2E tests require a build (`yarn build`) before they can run.
+- Run `yarn prettier --write .` before committing.

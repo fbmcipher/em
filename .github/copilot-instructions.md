@@ -6,8 +6,8 @@ Contributing Guidelines: https://github.com/cybersemics/em/blob/main/CONTRIBUTIN
 
 ## Instructions
 - Run `yarn prettier --write .` before committing any changes to ensure proper code formatting.
-- IMPORTANT: Before considering them complete, ALWAYS test your submissions using the run-tests skill. Submissions that fail tests or don't pass linters are not considered complete.
-    - Read the "Testing" section of this doc for more information. 
+- IMPORTANT: Run tests after EVERY code change using the run-tests skill. Do not wait until the end. Run tests after each individual change, fix any failures, then move on. Submissions that fail tests or linters are not considered complete.
+    - Read the "Testing" section of this doc for more information.
 
 ## Setup and Development
 
