@@ -75,15 +75,6 @@ Contributing Guidelines: https://github.com/cybersemics/em/blob/main/CONTRIBUTIN
   5. Fix the issues, push again, and repeat from step 3.
   6. Once ALL checks pass (including Puppeteer e2e tests), mark the PR as ready: `gh pr ready <pr-number>`
   - Do NOT mark a PR as ready for review until all CI checks are green.
-  - **Running Puppeteer tests locally**: Docker is available in your environment. To run Puppeteer tests, unset `GITHUB_ACTIONS` so the test script automatically starts the browserless Docker container and Vite dev server:
-    ```
-    GITHUB_ACTIONS="" yarn test:puppeteer
-    ```
-  - **Snapshot failures**: If Puppeteer tests fail due to snapshot mismatches or missing snapshots, do NOT delete or manually edit snapshot files. Instead, regenerate them by running:
-    ```
-    GITHUB_ACTIONS="" yarn test:puppeteer --update
-    ```
-    Then commit the updated snapshot files and push.
 - Checking if the CI is running using if-statements in the application source code is a bad practice and should be avoided if at all possible. It adds noise to application code, pollutes the production build, and sets up potentially hard to catch bugs where the application is behaving differently in tests than in production. When mocking functionality, find a way to modify/inject the mock from the test code. For example, if you need to mock commands in the GestureMenu in the Puppeteer tests, you might use direct DOM manipulation to replace whatever commands appear with dummy commands after they are rendered in the UI. This will create a small dependency on the DOM structure (though sticking to `data-testid` and `aria-label` will mitigate this), but it's better than mocks leaking into the application code.
 - Do not silently ignore unexpected states in tests by adding if-statements. Assume elements are present (or poll until they are present if there is an asynchronous action that must be awaited). Do not clutter test code with unnecessary if-stateents or try-catch statements. Allow the tests to fail hard otherwise.
 - Do not use element selectors in tests. That creates unnecessary dependencies on the DOM structure. Instead, select based on `data-testid` or `aria-label` only. Add these attributes to the source code as needed.
