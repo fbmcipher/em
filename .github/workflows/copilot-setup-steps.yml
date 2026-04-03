@@ -5,7 +5,7 @@ on: workflow_dispatch
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  COPILOT_AGENT_FIREWALL_ALLOW_LIST_ADDITIONS: api.github.com
+  COPILOT_AGENT_FIREWALL_ALLOW_LIST_ADDITIONS: api.github.com,registry.hub.docker.com,production.cloudflare.docker.com,auth.docker.io,registry-1.docker.io
 
 jobs:
   # The job MUST be called `copilot-setup-steps` or it will not be picked up by Copilot.
