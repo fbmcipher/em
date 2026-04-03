@@ -65,7 +65,7 @@ Contributing Guidelines: https://github.com/cybersemics/em/blob/main/CONTRIBUTIN
 - Use existing test helpers and follow conventions in existing tests.
 - Run linter with `yarn lint`.
 - Run unit tests with `yarn test`.
-- Run Puppeteer tests with `yarn test:puppeteer`.
+- Run Puppeteer tests with the `puppeteer` skill. To regenerate snapshots, use the `puppeteer-update` skill.
 - Ensure linter, unit tests, and puppeteer tests all pass before requesting a review.
 - **CI Verification Loop**: After completing your changes, you MUST verify all CI checks pass before marking a PR as ready for review. Follow this process:
   1. Run `yarn lint` and `yarn test` locally and fix any failures.
