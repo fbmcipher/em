@@ -28,9 +28,3 @@ jobs:
 
       - name: Install npm dependencies
         run: yarn
-
-      - name: Pre-pull Docker images for Puppeteer tests
-        run: |
-          docker pull browserless/chrome:latest &
-          docker pull esplo/docker-local-ssl-termination-proxy &
-          wait
