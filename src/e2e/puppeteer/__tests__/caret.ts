@@ -4,6 +4,7 @@ import newThoughtCommand from '../../../commands/newThought'
 import openCommandCenterCommand from '../../../commands/openCommandCenter'
 import click from '../helpers/click'
 import clickBullet from '../helpers/clickBullet'
+import clickNote from '../helpers/clickNote'
 import clickThought from '../helpers/clickThought'
 import closeKeyboard from '../helpers/closeKeyboard'
 import emulate from '../helpers/emulate'
@@ -217,6 +218,27 @@ describe('all platforms', () => {
         (Node.TEXT_NODE === focusNodeType ? selection.focusOffset === 'first'.length : selection.focusOffset === 1)
       )
     })
+  })
+
+  it('clicking a thought while the caret is in a note should move the caret to the clicked thought', async () => {
+    const importText = `
+    - One
+    - Two
+      - =note
+        - Note`
+
+    await paste(importText)
+
+    // set the caret at the end of the note under Two
+    await clickNote('Note')
+    await press('End')
+
+    // tap One
+    await clickThought('One')
+
+    // the caret should move to One, not Two
+    const textContent = await getSelection().focusNode?.textContent
+    expect(textContent).toBe('One')
   })
 
   it('caret should move to editable after closing the command palette, then executing a cursor down command', async () => {
