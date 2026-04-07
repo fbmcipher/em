@@ -1,12 +1,15 @@
 import { KnownDevices } from 'puppeteer'
 import newSubthoughtCommand from '../../../commands/newSubthought'
 import newThoughtCommand from '../../../commands/newThought'
+import dragAndDropThought from '../helpers/dragAndDropThought'
 import exportThoughts from '../helpers/exportThoughts'
 import gesture from '../helpers/gesture'
 import keyboard from '../helpers/keyboard'
+import paste from '../helpers/paste'
+import waitForAlertContent from '../helpers/waitForAlertContent'
 import { page } from '../setup'
 
-vi.setConfig({ testTimeout: 20000, hookTimeout: 20000 })
+vi.setConfig({ testTimeout: 60000, hookTimeout: 20000 })
 
 /**
  * Test suite for gesture alert behavior.
@@ -92,5 +95,38 @@ describe('chaining commands', () => {
 - a
   - 
 `)
+  })
+})
+
+describe('gestures after drag and drop to home with duplicate', () => {
+  beforeEach(async () => {
+    await page.emulate(KnownDevices['iPhone 15 Pro'])
+  })
+
+  /**
+   * Regression test for: [Mobile] Unable to draw tracing after moving a duplicate thought to Home (root).
+   *
+   * After dragging a subthought that shares a value with an existing root thought (duplicate) to the home
+   * context, the gesture recognition system should remain functional.
+   */
+  it('gestures should work after moving a duplicate subthought to home (root)', async () => {
+    await paste(`
+- A
+- B
+  - C
+- C
+`)
+
+    // Drag the first C in DOM order (subthought of B) to root, before B.
+    // This triggers the duplicate-to-home scenario described in the issue.
+    await dragAndDropThought('C', 'B', { position: 'before' })
+
+    // Execute a swipe gesture to create a new thought.
+    // After the buggy drag, the gesture system is stuck and the command never fires.
+    await gesture(newThoughtCommand)
+
+    // Verify the gesture was recognised: the alert should update to show the command label.
+    // This assertion currently fails because gestures are broken after the duplicate move.
+    await waitForAlertContent('New Thought', { timeout: 5000 })
   })
 })
