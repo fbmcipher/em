@@ -1,5 +1,6 @@
 ---
 name: persistent-pusher
+description: Autonomously manages the full lifecycle of code changes — branching, committing, opening PRs, and iterating on CI failures until all checks pass.
 ---
 
 # Persistent Pusher
