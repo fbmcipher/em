@@ -4,6 +4,7 @@ import newThoughtCommand from '../../../commands/newThought'
 import openCommandCenterCommand from '../../../commands/openCommandCenter'
 import click from '../helpers/click'
 import clickBullet from '../helpers/clickBullet'
+import clickNote from '../helpers/clickNote'
 import clickThought from '../helpers/clickThought'
 import closeKeyboard from '../helpers/closeKeyboard'
 import emulate from '../helpers/emulate'
@@ -183,6 +184,33 @@ describe('all platforms', () => {
 
     const textContext = await getSelection().focusNode?.textContent
     expect(textContext).toBe('firstlast')
+  })
+
+  // https://github.com/cybersemics/em/issues/3956
+  it('clicking a thought after being in a note should move the caret to the thought', async () => {
+    const importText = `
+    - a
+      - =note
+        - This is a note
+    - b`
+
+    await paste(importText)
+
+    // Click the note to focus it
+    await clickNote('a')
+
+    // Verify the note is focused
+    await waitUntil(() => {
+      const activeElement = document.activeElement
+      return activeElement?.getAttribute('aria-label') === 'note-editable'
+    })
+
+    // Click on thought 'b'
+    await clickThought('b')
+
+    // The caret should be in thought 'b', not back in 'a'
+    const textContext = await getSelection().focusNode?.textContent
+    expect(textContext).toBe('b')
   })
 
   it('backspace on empty thought should move caret to the end of the previous thought', async () => {
