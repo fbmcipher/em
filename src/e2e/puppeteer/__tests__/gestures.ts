@@ -9,7 +9,7 @@ import paste from '../helpers/paste'
 import waitForAlertContent from '../helpers/waitForAlertContent'
 import { page } from '../setup'
 
-vi.setConfig({ testTimeout: 60000, hookTimeout: 20000 })
+vi.setConfig({ testTimeout: 20000, hookTimeout: 20000 })
 
 /**
  * Test suite for gesture alert behavior.
@@ -109,7 +109,7 @@ describe('gestures after drag and drop to home with duplicate', () => {
    * After dragging a subthought that shares a value with an existing root thought (duplicate) to the home
    * context, the gesture recognition system should remain functional.
    */
-  it('gestures should work after moving a duplicate subthought to home (root)', async () => {
+  it('FAILING: gestures do not work after moving a duplicate subthought to home (root)', async () => {
     await paste(`
 - A
 - B
@@ -128,5 +128,5 @@ describe('gestures after drag and drop to home with duplicate', () => {
     // Verify the gesture was recognised: the alert should update to show the command label.
     // This assertion currently fails because gestures are broken after the duplicate move.
     await waitForAlertContent('New Thought', { timeout: 5000 })
-  })
+  }, 60000)
 })
