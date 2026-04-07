@@ -26,12 +26,12 @@ describe('duplicate thought drag-and-drop gesture bug', () => {
    * Test for moving duplicate thought above the sibling.
    *
    * Steps:
-   * 1. Place the cursor on Subthought C under Thought B
-   * 2. Tap and hold
-   * 3. Drag to the root above Thought B
+   * 1. Place the cursor on Subthought C under Thought B.
+   * 2. Tap and hold.
+   * 3. Drag to the root above Thought B.
    *
-   * Expected: Gestures should still work after the move
-   * Actual: User cannot draw any tracing on screen
+   * Expected: Gestures should still work after the move.
+   * Actual: User cannot draw any tracing on screen.
    */
   it('gestures should work after moving duplicate thought above sibling', async () => {
     // Paste the thought structure
@@ -51,7 +51,7 @@ describe('duplicate thought drag-and-drop gesture bug', () => {
     await clickThought('B')
 
     // Wait for the subthought C to be visible
-    const subthoughtC = await waitForEditable('C')
+    await waitForEditable('C')
 
     // Get the editable element handle for drag and drop
     await page.evaluate(() => {
@@ -80,12 +80,12 @@ describe('duplicate thought drag-and-drop gesture bug', () => {
    * Test for moving duplicate thought below the sibling.
    *
    * Steps:
-   * 1. Place the cursor on Subthought C under Thought B
-   * 2. Tap and hold
-   * 3. Drag to the root below Thought C
+   * 1. Place the cursor on Subthought C under Thought B.
+   * 2. Tap and hold.
+   * 3. Drag to the root below Thought C.
    *
-   * Expected: Gestures should still work after the move
-   * Actual: User cannot draw any tracing on screen
+   * Expected: Gestures should still work after the move.
+   * Actual: User cannot draw any tracing on screen.
    */
   it('gestures should work after moving duplicate thought below sibling', async () => {
     // Paste the thought structure
