@@ -107,10 +107,13 @@ describe('gesture after drag of duplicate to home', () => {
    * Regression test for: [Mobile] Unable to draw tracing after moving a duplicate thought to Home (root).
    *
    * When a subthought is dragged to the home context where a thought with the same value already exists,
-   * the thoughts are merged. Due to a missing longPress state reset after the drag, the gesture system
-   * incorrectly believes a drag is still in progress and cancels all subsequent gestures.
+   * the thoughts are merged. Due to two early returns in useDragAndDropThought.drop() — one because
+   * head(parentOf(props.simplePath)) is undefined for the home context, and one because pathToThought
+   * returns null for the merged (deleted) source thought — the "moved to home context" alert is never
+   * dispatched. This leaves the "Drag and drop to move thought" alert stuck (clearDelay: null) and on
+   * real mobile devices, the longPress state is also not reset, preventing gesture tracing.
    */
-  it('should allow gestures after moving a duplicate subthought to the home context', async () => {
+  it('should show a "moved to home context" alert after dragging a duplicate subthought to the home context', async () => {
     await paste(`
       - A
       - B
@@ -174,12 +177,11 @@ describe('gesture after drag of duplicate to home', () => {
 
     await page.touchscreen.touchEnd()
 
-    // Perform a gesture to verify the gesture system is still functional after the drag.
-    // The newThought gesture (swipe right-down) should create a new thought and show a "New Thought" alert.
-    // If the longPress state was not properly reset after the drag, shouldCancelGesture() will return true
-    // and the gesture will be silently abandoned with no alert.
-    await gesture(newThoughtCommand)
-
-    await waitForAlertContent('New Thought')
+    // After the drag, a "moved to home context" alert should appear to confirm the move.
+    // This currently fails because useDragAndDropThought.drop() has two early returns:
+    // 1. `if (!parentThought) return` — parentThought is undefined when parent is the root context
+    //    (head(parentOf(props.simplePath)) === head([]) === undefined)
+    // 2. `if (!firstFromThought) return` — firstFromThought is null after mergeThoughts deletes the source
+    await waitForAlertContent('moved to home context')
   })
 })
