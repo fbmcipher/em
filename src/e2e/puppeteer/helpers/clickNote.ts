@@ -1,0 +1,19 @@
+import { page } from '../setup'
+
+/**
+ * Click the note for the given note value. Waits for the note at the beginning in case it hasn't been rendered yet.
+ */
+const clickNote = async (value: string) => {
+  const noteHandle = await page.waitForFunction(
+    (value: string) =>
+      Array.from(document.querySelectorAll('[aria-label="note-editable"]')).find(
+        element => element.innerHTML === value,
+      ),
+    { timeout: 6000 },
+    value,
+  )
+  // @ts-expect-error - https://github.com/puppeteer/puppeteer/issues/8852
+  await noteHandle.asElement()?.click()
+}
+
+export default clickNote
