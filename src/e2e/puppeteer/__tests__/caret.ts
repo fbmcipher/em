@@ -4,6 +4,7 @@ import newThoughtCommand from '../../../commands/newThought'
 import openCommandCenterCommand from '../../../commands/openCommandCenter'
 import click from '../helpers/click'
 import clickBullet from '../helpers/clickBullet'
+import clickNote from '../helpers/clickNote'
 import clickThought from '../helpers/clickThought'
 import closeKeyboard from '../helpers/closeKeyboard'
 import emulate from '../helpers/emulate'
@@ -345,6 +346,23 @@ describe('mobile only', () => {
 
     const textContext = await getEditingText()
     expect(textContext).toBe('a')
+  })
+
+  // https://github.com/cybersemics/em/issues/3956
+  it('caret should move to the tapped thought, not the note parent, when tapping a thought after a note', async () => {
+    const importText = `
+    - One
+    - Two
+      - =note
+        - Note`
+
+    await paste(importText)
+
+    await clickNote('Note')
+    await clickThought('One')
+
+    const textContent = await getSelection().focusNode?.textContent
+    expect(textContent).toBe('One')
   })
 
   it('tapping a thought after opening and closing Command Center via Done should not open the keyboard', async () => {
