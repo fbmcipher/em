@@ -1,0 +1,96 @@
+name: Update Snapshots
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to update snapshots on'
+        required: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  CI: true
+
+jobs:
+  update:
+    name: Update Snapshots
+    runs-on: ubuntu-latest
+    services:
+      browserless:
+        image: browserless/chrome:latest
+        ports:
+          - 7566:3000
+        env:
+          CONNECTION_TIMEOUT: -1
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Set Node.js version
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install npm dependencies
+        run: yarn
+
+      - name: Start SSL proxy
+        run: docker run -d --rm --add-host=host.docker.internal:host-gateway -e "PORT=3000" -p 2552:443 esplo/docker-local-ssl-termination-proxy
+
+      - name: Build
+        run: yarn build
+
+      - name: Serve
+        run: |
+          yarn servebuild &
+          SERVER_PID=$!
+          echo "Server PID: $SERVER_PID"
+
+          echo "Waiting for server to be ready..."
+          for i in {1..30}; do
+            if ! kill -0 $SERVER_PID 2>/dev/null; then
+              echo "Server process died!"
+              exit 1
+            fi
+
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -k https://localhost:2552 2>/dev/null || echo "000")
+
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "Server is ready and responding with 200!"
+              break
+            elif [ "$HTTP_STATUS" = "502" ]; then
+              echo "Attempt $i/30: Server running but returning 502 (Bad Gateway) - proxy not ready"
+            elif [ "$HTTP_STATUS" = "000" ]; then
+              echo "Attempt $i/30: Server not responding yet"
+            else
+              echo "Attempt $i/30: Server responding with status $HTTP_STATUS"
+            fi
+
+            if [ $i -eq 30 ]; then
+              echo "Server failed to respond properly after 30 attempts (last status: $HTTP_STATUS)"
+              exit 1
+            fi
+
+            sleep 1
+          done
+
+      - name: Update snapshots
+        run: yarn test:puppeteer --update
+
+      - name: Commit updated snapshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A "src/e2e/puppeteer/__tests__/__image_snapshots__/"
+          if git diff --cached --quiet; then
+            echo "No snapshot changes to commit."
+          else
+            git commit -m "Update Puppeteer snapshots"
+            git push
+          fi
