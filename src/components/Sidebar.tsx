@@ -8,14 +8,12 @@ import { css } from '../../styled-system/css'
 import { token } from '../../styled-system/tokens'
 import { longPressActionCreator as longPress } from '../actions/longPress'
 import { toggleSidebarActionCreator } from '../actions/toggleSidebar'
-import { isSafari } from '../browser'
 import { LongPressState } from '../constants'
 import viewportStore from '../stores/viewport'
 import durations from '../util/durations'
 import fastClick from '../util/fastClick'
 import FadeTransition from './FadeTransition'
 import Favorites from './Favorites'
-import ProgressiveBlur from './ProgressiveBlur'
 import RecentlyDeleted from './RecentlyDeleted'
 import RecentlyEdited from './RecentlyEdited'
 
@@ -66,48 +64,17 @@ const SidebarLink = ({
 /** The xl breakpoint in pixels, used for JS-based responsive checks. */
 const XL_BREAKPOINT = parseInt(token('breakpoints.xl'))
 
-/** The sidebar gradient overlay. */
-const SidebarGradient = ({
-  opacity,
-  width,
-  showSidebar,
-  toggleSidebar,
-}: {
-  opacity: MotionValue<number>
-  width: string
-  showSidebar: boolean
-  toggleSidebar: (value: boolean) => void
-}) => (
-  <motion.div
-    aria-label='sidebar-gradient'
-    aria-hidden='true'
-    style={{ opacity }}
-    onClick={() => toggleSidebar(false)}
-    className={css({
-      position: 'absolute',
-      inset: 0,
-      background: 'linear-gradient(to right, {colors.sidebarBg} 0%, {colors.bgTransparent} 100%)',
-      width,
-      pointerEvents: showSidebar ? 'auto' : 'none',
-      cursor: 'pointer',
-      userSelect: 'none',
-    })}
-  />
-)
-
-/** The sidebar background component with progressive blur and gradient. */
+/** The sidebar background component with a dimming overlay. */
 const SidebarBackground = ({
   x,
   widthPx,
   showSidebar,
   toggleSidebar,
-  width,
 }: {
   x: MotionValue<number>
   widthPx: number
   showSidebar: boolean
   toggleSidebar: (value: boolean) => void
-  width: string
 }) => {
   // Derive opacity from sidebar x position, then apply cubic ease-in
   // so the background fades in gently and catches up as the sidebar settles.
@@ -138,22 +105,6 @@ const SidebarBackground = ({
           touchAction: 'none',
         })}
       />
-
-      {/*
-       * On WebKit (Safari/iOS), it looks better if the blur is applied -above- the gradient. The other way around, there's patchy artifacts.
-       * On Chromium, it looks better if the blur is applied -below- the gradient. The other way around, there's visible banding artifacts.
-       */}
-      {isSafari() ? (
-        <>
-          <SidebarGradient opacity={opacity} width={width} showSidebar={showSidebar} toggleSidebar={toggleSidebar} />
-          <ProgressiveBlur direction='to right' minBlur={0} maxBlur={32} layers={4} width={width} opacity={opacity} />
-        </>
-      ) : (
-        <>
-          <ProgressiveBlur direction='to right' minBlur={0} maxBlur={32} layers={4} width={width} opacity={opacity} />
-          <SidebarGradient opacity={opacity} width={width} showSidebar={showSidebar} toggleSidebar={toggleSidebar} />
-        </>
-      )}
     </div>
   )
 }
@@ -466,13 +417,7 @@ const Sidebar = () => {
               userSelect: 'none',
             })}
           >
-            <SidebarBackground
-              x={x}
-              widthPx={widthPx}
-              showSidebar={showSidebar}
-              toggleSidebar={toggleSidebar}
-              width={width}
-            />
+            <SidebarBackground x={x} widthPx={widthPx} showSidebar={showSidebar} toggleSidebar={toggleSidebar} />
 
             <Dialog.Content
               asChild
@@ -494,7 +439,7 @@ const Sidebar = () => {
                   left: 0,
                   bottom: 0,
                   width,
-                  backgroundColor: 'transparent',
+                  backgroundColor: 'sidebarBg',
                   zIndex: 'sidebar',
                   userSelect: 'none',
                   outline: 'none',
