@@ -67,6 +67,20 @@ Contributing Guidelines: https://github.com/cybersemics/em/blob/main/CONTRIBUTIN
 - Run unit tests with `yarn test`.
 - Run Puppeteer tests with `yarn test:puppeteer`.
 - Ensure linter, unit tests, and puppeteer tests all pass before requesting a review.
+- **CI Verification Loop**: After completing your changes, you MUST verify all CI checks pass before marking a PR as ready for review. Follow this process:
+  1. Run `yarn lint` and `yarn test` locally and fix any failures.
+  2. Push your branch and open a **draft** pull request: `gh pr create --draft --title "..." --body "..."`
+  3. Wait for all CI checks to complete by polling: `gh pr checks <pr-number> --watch --fail-fast`
+  4. If any check fails, inspect the failure logs with: `gh run view <run-id> --log-failed`
+  5. Fix the issues, push again, and repeat from step 3.
+  6. Once ALL checks pass (including Puppeteer e2e tests), mark the PR as ready: `gh pr ready <pr-number>`
+  - Do NOT mark a PR as ready for review until all CI checks are green.
+  - Do NOT skip Puppeteer tests — they require the CI environment (Docker) and cannot be run locally in your session.
+  - **Snapshot failures**: If Puppeteer tests fail due to snapshot mismatches, do NOT delete or manually edit snapshot files. Instead, trigger the snapshot update workflow and wait for it to commit the updated snapshots to your branch:
+    1. `gh workflow run update-snapshots.yml -f branch=<your-branch>`
+    2. Poll until complete: `gh run list --workflow=update-snapshots.yml --branch=<your-branch> --limit=1 --json status,conclusion`
+    3. Pull the updated snapshots: `git pull`
+    4. Wait for CI to re-run and pass, then mark the PR as ready.
 - Checking if the CI is running using if-statements in the application source code is a bad practice and should be avoided if at all possible. It adds noise to application code, pollutes the production build, and sets up potentially hard to catch bugs where the application is behaving differently in tests than in production. When mocking functionality, find a way to modify/inject the mock from the test code. For example, if you need to mock commands in the GestureMenu in the Puppeteer tests, you might use direct DOM manipulation to replace whatever commands appear with dummy commands after they are rendered in the UI. This will create a small dependency on the DOM structure (though sticking to `data-testid` and `aria-label` will mitigate this), but it's better than mocks leaking into the application code.
 - Do not silently ignore unexpected states in tests by adding if-statements. Assume elements are present (or poll until they are present if there is an asynchronous action that must be awaited). Do not clutter test code with unnecessary if-stateents or try-catch statements. Allow the tests to fail hard otherwise.
 - Do not use element selectors in tests. That creates unnecessary dependencies on the DOM structure. Instead, select based on `data-testid` or `aria-label` only. Add these attributes to the source code as needed.
