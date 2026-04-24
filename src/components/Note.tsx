@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
+import * as ContentEditableModule from 'react-contenteditable'
 import { useDispatch, useSelector } from 'react-redux'
 import { css, cx } from '../../styled-system/css'
 import { textNoteRecipe } from '../../styled-system/recipes'
@@ -24,6 +24,27 @@ import head from '../util/head'
 import strip from '../util/strip'
 import useOnCut from './Editable/useOnCut'
 import FauxCaret from './FauxCaret'
+
+type ContentEditableEvent = import('react-contenteditable').ContentEditableEvent
+type ContentEditableComponent = React.ComponentType<import('react-contenteditable').Props>
+
+/** Resolves the react-contenteditable component across default export interop shapes. */
+const resolveContentEditable = (): ContentEditableComponent => {
+  const mod = ContentEditableModule as unknown as { default?: unknown }
+
+  if (typeof mod.default === 'function') return mod.default as ContentEditableComponent
+
+  if (mod.default && typeof mod.default === 'object') {
+    const nested = (mod.default as { default?: unknown }).default
+    if (typeof nested === 'function') return nested as ContentEditableComponent
+  }
+
+  if (typeof ContentEditableModule === 'function') return ContentEditableModule as unknown as ContentEditableComponent
+
+  throw new Error('Unable to resolve react-contenteditable export.')
+}
+
+const ContentEditable = resolveContentEditable()
 
 /** Renders an editable note that modifies the content of the hidden =note attribute. */
 const Note = React.memo(

@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import React, { FC, useRef } from 'react'
-import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
+import * as ContentEditableModule from 'react-contenteditable'
 import { useDispatch } from 'react-redux'
 import { css, cx } from '../../styled-system/css'
 import { childRecipe, editableRecipe, thoughtRecipe } from '../../styled-system/recipes'
@@ -10,6 +10,27 @@ import store from '../stores/app'
 import strip from '../util/strip'
 import SearchIcon from './SearchIcon'
 import SearchSubthoughts from './SearchSubthoughts'
+
+type ContentEditableEvent = import('react-contenteditable').ContentEditableEvent
+type ContentEditableComponent = React.ComponentType<import('react-contenteditable').Props>
+
+/** Resolves the react-contenteditable component across default export interop shapes. */
+const resolveContentEditable = (): ContentEditableComponent => {
+  const mod = ContentEditableModule as unknown as { default?: unknown }
+
+  if (typeof mod.default === 'function') return mod.default as ContentEditableComponent
+
+  if (mod.default && typeof mod.default === 'object') {
+    const nested = (mod.default as { default?: unknown }).default
+    if (typeof nested === 'function') return nested as ContentEditableComponent
+  }
+
+  if (typeof ContentEditableModule === 'function') return ContentEditableModule as unknown as ContentEditableComponent
+
+  throw new Error('Unable to resolve react-contenteditable export.')
+}
+
+const ContentEditable = resolveContentEditable()
 
 // milliseconds to delay the search function for performance
 const SEARCH_DEBOUNCE_WAIT = 180
