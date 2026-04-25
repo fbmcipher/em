@@ -375,7 +375,9 @@ const Editable = ({
         // That style should be re-applied once they type something. (#3673)
 
         const wrappedValue = state.cursorCleared ? applyOuterTag(e.target.value, oldValue) : e.target.value
-        const newValue = stripEmptyFormattingTags(addEmojiSpace(trimHtml(wrappedValue)))
+        const trimmedValue = trimHtml(wrappedValue)
+        const valueWithEmojiSpace = addEmojiSpace(trimmedValue)
+        const newValue = stripEmptyFormattingTags(valueWithEmojiSpace)
 
         /* The realtime editingValue must always be updated (and not short-circuited) since oldValueRef is throttled. Otherwise, editingValueStore becomes stale and heights are not recalculated in VirtualThought.
 
@@ -460,6 +462,20 @@ const Editable = ({
           thoughtChangeHandler(newValue, { force: wrappedValue !== e.target.value, rank, simplePath })
         } else {
           throttledChangeRef.current(newValue, { rank, simplePath })
+        }
+
+        // If addEmojiSpace inserted a space, immediately update the contenteditable DOM and move the caret after the
+        // space. Otherwise the space is only visible after blur (e.g. when the virtual keyboard closes on mobile).
+        if (valueWithEmojiSpace !== trimmedValue && contentRef.current) {
+          const cursorOffset = selection.offsetThought()
+          contentRef.current.innerHTML = newValue
+          if (cursorOffset !== null) {
+            // Find the code-unit index where the space was inserted so we can advance the cursor past it.
+            const spacePos = valueWithEmojiSpace.indexOf(' ')
+            selection.set(contentRef.current, {
+              offset: spacePos >= 0 && cursorOffset >= spacePos ? cursorOffset + 1 : cursorOffset,
+            })
+          }
         }
       })
     },
