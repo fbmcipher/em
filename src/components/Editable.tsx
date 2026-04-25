@@ -470,10 +470,21 @@ const Editable = ({
           const cursorOffset = selection.offsetThought()
           contentRef.current.innerHTML = newValue
           if (cursorOffset !== null) {
-            // Find the code-unit index where the space was inserted so we can advance the cursor past it.
-            const spacePos = valueWithEmojiSpace.indexOf(' ')
+            // Find the code-unit index where the space was inserted by comparing the original and modified strings.
+            // addEmojiSpace always inserts exactly one space within trimmedValue's bounds (it requires non-whitespace
+            // text to follow the emoji group), so spacePos will always be found before trimmedValue.length.
+            let spacePos = 0
+            const comparisonLength = Math.max(trimmedValue.length, valueWithEmojiSpace.length)
+            for (let i = 0; i < comparisonLength; i++) {
+              if (trimmedValue[i] !== valueWithEmojiSpace[i]) {
+                spacePos = i
+                break
+              }
+            }
+            // Place the cursor after the inserted space when the cursor is at or after the insertion point.
+            // This is always the case when the emoji was just inserted (cursor is right after the emoji group).
             selection.set(contentRef.current, {
-              offset: spacePos >= 0 && cursorOffset >= spacePos ? cursorOffset + 1 : cursorOffset,
+              offset: cursorOffset >= spacePos ? cursorOffset + 1 : cursorOffset,
             })
           }
         }
