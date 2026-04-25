@@ -22,7 +22,8 @@ function configureSnapshots({
       threshold: 0.18,
     },
     // full picture failure threshold pixels (default: 0)
-    failureThreshold: 4,
+    // 14 pixels is the observed difference between Chrome versions in CI vs local Docker
+    failureThreshold: 20,
     // custom identifier for snapshots based on the title of the test
     customSnapshotIdentifier: ({ defaultIdentifier }) => {
       return `${defaultIdentifier.replace(`${fileName}-ts-`, '').toLocaleLowerCase()}`
