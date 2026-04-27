@@ -30,27 +30,47 @@ jobs:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
+      # `pull_request_target` runs the workflow file from the default branch but checks out the PR's
+      # head code. PRs that branched before the HTTPS dev server migration don't have the plugins
+      # this workflow needs (basic-ssl, tunnel-token gate), so the server can't start. Skip the job
+      # gracefully and tell the author to rebase rather than failing.
+      - name: Detect HTTPS dev server support
+        id: https_check
+        run: |
+          if grep -q "@vitejs/plugin-basic-ssl" vite.config.ts; then
+            echo "supported=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "supported=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=BrowserStack skipped::This PR predates the HTTPS dev server migration. Rebase onto current main to enable iOS testing."
+          fi
+
       - name: Enable Corepack
+        if: steps.https_check.outputs.supported == 'true'
         run: corepack enable
 
       - name: Set Node.js version
+        if: steps.https_check.outputs.supported == 'true'
         uses: actions/setup-node@v6
         with:
           node-version: 22
 
       - name: Install npm dependencies
+        if: steps.https_check.outputs.supported == 'true'
         run: yarn
 
       - name: Build
+        if: steps.https_check.outputs.supported == 'true'
         run: yarn build
 
       - name: Generate tunnel token
+        if: steps.https_check.outputs.supported == 'true'
         run: |
           TOKEN=$(openssl rand -hex 16)
           echo "::add-mask::$TOKEN"
           echo "TUNNEL_TOKEN=$TOKEN" >> "$GITHUB_ENV"
 
       - name: Serve
+        if: steps.https_check.outputs.supported == 'true'
         run: |
           yarn servebuild &
 
@@ -70,6 +90,7 @@ jobs:
           done
 
       - name: Test iOS on BrowserStack
+        if: steps.https_check.outputs.supported == 'true'
         run: yarn test:ios
         env:
           BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
