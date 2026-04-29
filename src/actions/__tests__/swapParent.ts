@@ -126,6 +126,42 @@ it('swapped parent should take the rank of the child', () => {
   expectPathToEqual(stateNew, stateNew.cursor, ['d', 'a'])
 })
 
+it('shows alert and no-ops when child thought is empty', () => {
+  const steps = [newThought({ value: 'a' }), newThought({ value: '', insertNewSubthought: true }), swapParent]
+
+  const stateNew = reducerFlow(steps)(initialState())
+  const exported = exportContext(stateNew, [HOME_TOKEN], 'text/plain')
+  expect(exported).toBe(`- ${HOME_TOKEN}
+  - a
+    - `)
+
+  expect(stateNew.alert?.value).toBeTruthy()
+})
+
+it('shows alert and no-ops when parent thought is empty', () => {
+  const steps = [newThought({ value: '' }), newThought({ value: 'b', insertNewSubthought: true }), swapParent]
+
+  const stateNew = reducerFlow(steps)(initialState())
+  const exported = exportContext(stateNew, [HOME_TOKEN], 'text/plain')
+  expect(exported).toBe(`- ${HOME_TOKEN}
+  - 
+    - b`)
+
+  expect(stateNew.alert?.value).toBeTruthy()
+})
+
+it('shows alert and no-ops when both thoughts are empty', () => {
+  const steps = [newThought({ value: '' }), newThought({ value: '', insertNewSubthought: true }), swapParent]
+
+  const stateNew = reducerFlow(steps)(initialState())
+  const exported = exportContext(stateNew, [HOME_TOKEN], 'text/plain')
+  expect(exported).toBe(`- ${HOME_TOKEN}
+  - 
+    - `)
+
+  expect(stateNew.alert?.value).toBeTruthy()
+})
+
 describe('context view', () => {
   it('swap as normal and preserve cursor in descendants of contexts in the context view', () => {
     const text = `
