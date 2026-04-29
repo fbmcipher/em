@@ -135,7 +135,7 @@ it('shows alert and no-ops when child thought is empty', () => {
   - a
     - `)
 
-  expect(stateNew.alert?.value).toBeTruthy()
+  expect(stateNew.alert?.value).toBe('Swap Parent cannot be performed on empty thoughts.')
 })
 
 it('shows alert and no-ops when parent thought is empty', () => {
@@ -147,7 +147,7 @@ it('shows alert and no-ops when parent thought is empty', () => {
   - 
     - b`)
 
-  expect(stateNew.alert?.value).toBeTruthy()
+  expect(stateNew.alert?.value).toBe('Swap Parent cannot be performed on empty thoughts.')
 })
 
 it('shows alert and no-ops when both thoughts are empty', () => {
@@ -159,7 +159,7 @@ it('shows alert and no-ops when both thoughts are empty', () => {
   - 
     - `)
 
-  expect(stateNew.alert?.value).toBeTruthy()
+  expect(stateNew.alert?.value).toBe('Swap Parent cannot be performed on empty thoughts.')
 })
 
 describe('context view', () => {
