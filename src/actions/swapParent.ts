@@ -44,6 +44,11 @@ const swapParent = (state: State): State => {
   const parentThought = getThoughtById(state, parentId)
   if (!childThought || !parentThought) return state
 
+  // Disallow swap when either thought is empty to avoid an invalid path error.
+  if (!childThought.value || !parentThought.value) {
+    return alert(state, { value: 'Swap Parent is not allowed on empty thoughts.' })
+  }
+
   // Get only direct children of the child thought (grandchildren)
   const childChildren = getChildrenRanked(state, childId)
 

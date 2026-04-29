@@ -5,6 +5,7 @@ import setCursor from '../../test-helpers/setCursorFirstMatch'
 import initialState from '../../util/initialState'
 import reducerFlow from '../../util/reducerFlow'
 import importText from '../importText'
+import newSubthought from '../newSubthought'
 import newThought from '../newThought'
 import setSortPreference from '../setSortPreference'
 import swapParent from '../swapParent'
@@ -226,6 +227,50 @@ describe('context view', () => {
         - y1`)
 
     expectPathToEqual(stateNew, stateNew.cursor, ['a', 'm', 'a', 'x'])
+
+    expect(stateNew.alert?.value).toBeTruthy()
+  })
+})
+
+describe('empty thoughts', () => {
+  it('shows alert and does not swap when both parent and child are empty', () => {
+    const steps = [newThought(''), newSubthought(''), swapParent]
+
+    const stateNew = reducerFlow(steps)(initialState())
+    const exported = exportContext(stateNew, [HOME_TOKEN], 'text/plain')
+
+    // Structure should be unchanged
+    expect(exported).toBe(`- ${HOME_TOKEN}
+  - 
+    - `)
+
+    expect(stateNew.alert?.value).toBeTruthy()
+  })
+
+  it('shows alert and does not swap when child is empty', () => {
+    const steps = [importText({ text: '- a' }), setCursor(['a']), newSubthought(''), swapParent]
+
+    const stateNew = reducerFlow(steps)(initialState())
+    const exported = exportContext(stateNew, [HOME_TOKEN], 'text/plain')
+
+    // Structure should be unchanged
+    expect(exported).toBe(`- ${HOME_TOKEN}
+  - a
+    - `)
+
+    expect(stateNew.alert?.value).toBeTruthy()
+  })
+
+  it('shows alert and does not swap when parent is empty', () => {
+    const steps = [newThought(''), newSubthought('a'), swapParent]
+
+    const stateNew = reducerFlow(steps)(initialState())
+    const exported = exportContext(stateNew, [HOME_TOKEN], 'text/plain')
+
+    // Structure should be unchanged
+    expect(exported).toBe(`- ${HOME_TOKEN}
+  - 
+    - a`)
 
     expect(stateNew.alert?.value).toBeTruthy()
   })
