@@ -10,6 +10,39 @@ import setSortPreference from '../setSortPreference'
 import swapParent from '../swapParent'
 import toggleContextView from '../toggleContextView'
 
+it('show alert when cursor thought is empty', () => {
+  // Use newThought to create an empty subthought (importText drops empty leaf thoughts)
+  const steps = [newThought({ value: 'a' }), newThought({ value: '', insertNewSubthought: true }), swapParent]
+
+  const stateNew = reducerFlow(steps)(initialState())
+  const exported = exportContext(stateNew, [HOME_TOKEN], 'text/plain')
+
+  // state should be unchanged
+  expect(exported).toBe(`- ${HOME_TOKEN}
+  - a
+    - `)
+
+  expect(stateNew.alert?.value).toBe('Swap Parent cannot be performed on empty thoughts.')
+})
+
+it('show alert when parent thought is empty', () => {
+  const text = `
+  - 
+    - b`
+
+  const steps = [importText({ text }), setCursor(['', 'b']), swapParent]
+
+  const stateNew = reducerFlow(steps)(initialState())
+  const exported = exportContext(stateNew, [HOME_TOKEN], 'text/plain')
+
+  // state should be unchanged
+  expect(exported).toBe(`- ${HOME_TOKEN}
+  - 
+    - b`)
+
+  expect(stateNew.alert?.value).toBe('Swap Parent cannot be performed on empty thoughts.')
+})
+
 it('no-op if cursor is not set', () => {
   const text = `
   - x
