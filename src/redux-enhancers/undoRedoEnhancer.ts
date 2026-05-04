@@ -114,7 +114,9 @@ const undoOneReducer = (state: State): State => {
   const lastUndoPatch = nthLast(undoPatches, 1)
   if (!lastUndoPatch) return state
   const newState = produce(state, (state: State) => applyPatch(state, lastUndoPatch).newDocument)
-  const correspondingRedoPatch = addActionsToPatch(diffState(newState as Index, state), [...lastUndoPatch[0]?.actions])
+  const correspondingRedoPatch = addActionsToPatch(diffState(newState as Index, state), [
+    ...(lastUndoPatch[0]?.actions ?? []),
+  ])
   return {
     ...newState,
     redoPatches: [...redoPatches, correspondingRedoPatch],
@@ -132,7 +134,9 @@ const redoOneReducer = (state: State): State => {
   const lastRedoPatch = nthLast(redoPatches, 1)
   if (!lastRedoPatch) return state
   const newState = produce(state, (state: State) => applyPatch(state, lastRedoPatch).newDocument)
-  const correspondingUndoPatch = addActionsToPatch(diffState(newState as Index, state), [...lastRedoPatch[0]?.actions])
+  const correspondingUndoPatch = addActionsToPatch(diffState(newState as Index, state), [
+    ...(lastRedoPatch[0]?.actions ?? []),
+  ])
   return {
     ...newState,
     redoPatches: redoPatches.slice(0, -1),
