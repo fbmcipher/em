@@ -4,6 +4,7 @@ import newThoughtCommand from '../../../commands/newThought'
 import exportThoughts from '../helpers/exportThoughts'
 import gesture from '../helpers/gesture'
 import keyboard from '../helpers/keyboard'
+import waitForAlertContent from '../helpers/waitForAlertContent'
 import { page } from '../setup'
 
 vi.setConfig({ testTimeout: 20000, hookTimeout: 20000 })
@@ -92,5 +93,21 @@ describe('chaining commands', () => {
 - a
   - 
 `)
+  })
+
+  it('Select All + Archive archives all thoughts', async () => {
+    // Create three thoughts
+    await gesture(newThoughtCommand)
+    await keyboard.type('One')
+    await gesture(newThoughtCommand)
+    await keyboard.type('Two')
+    await gesture(newThoughtCommand)
+    await keyboard.type('Three')
+
+    // Select All (ldr) + Archive (ldl) = ldrldl
+    await gesture('ldrldl')
+
+    // Verify the alert confirms all 3 thoughts were archived
+    await waitForAlertContent('Deleted 3 thoughts.')
   })
 })
