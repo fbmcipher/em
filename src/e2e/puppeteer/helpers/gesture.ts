@@ -49,9 +49,12 @@ const gesture = async (
   gestureOrCommand: Gesture | Command,
   {
     hold,
+    startX,
   }: {
     /** If true, the gesture will be held and not completed with touchEnd. */
     hold?: boolean
+    /** Override the starting x coordinate. Defaults to 150. Useful when long gestures would otherwise go off-screen. */
+    startX?: number
   } = {},
 ) => {
   if (isCommand(gestureOrCommand) && !gestureOrCommand.gesture) {
@@ -74,7 +77,7 @@ const gesture = async (
   // Starting position more reliably in gesture zone
   // For iPhone 15 Pro (393px wide), gesture zone is approximately x < 295px
   // Use center-left area to ensure we're in the gesture zone
-  let x = 150
+  let x = startX ?? 150
   let y = 350
 
   // Generate points for each direction in the gesture

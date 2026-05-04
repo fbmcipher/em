@@ -105,7 +105,8 @@ describe('chaining commands', () => {
     await keyboard.type('Three')
 
     // Select All (ldr) + Archive (ldl) = ldrldl
-    await gesture('ldrldl')
+    // Use startX=200 so the 6-swipe gesture stays within screen bounds
+    await gesture('ldrldl', { startX: 200 })
 
     // Verify the alert confirms all 3 thoughts were archived
     await waitForAlertContent('Deleted 3 thoughts.')
