@@ -104,9 +104,34 @@ describe('chaining commands', () => {
     await gesture(newThoughtCommand)
     await keyboard.type('Three')
 
-    // Select All (ldr) + Archive (ldl) = ldrldl
-    // Use startX=200 so the 6-swipe gesture stays within screen bounds
-    await gesture('ldrldl', { startX: 200 })
+    // Perform the Select All (ldr) + Archive (ldl) = ldrldl gesture.
+    // Use startX=200 so all 6 swipes stay within screen bounds — the default
+    // starting x of 150 would take the final leftward swipe to x=-10 (off-screen).
+    const stepSize = 80
+    const smallStep = 10
+    let x = 200
+    let y = 350
+
+    /** Move touch from current position in the given direction by one swipe-step. */
+    const swipe = async (dir: 'l' | 'r' | 'd' | 'u') => {
+      const dx = dir === 'l' ? -stepSize : dir === 'r' ? stepSize : 0
+      const dy = dir === 'd' ? stepSize : dir === 'u' ? -stepSize : 0
+      const steps = Math.ceil(Math.abs(dx || dy) / smallStep)
+      for (let i = 1; i <= steps; i++) {
+        await page.touchscreen.touchMove(x + (dx * i) / steps, y + (dy * i) / steps)
+      }
+      x += dx
+      y += dy
+    }
+
+    await page.touchscreen.touchStart(x, y)
+    await swipe('l') // x=120
+    await swipe('d') // y=430
+    await swipe('r') // x=200
+    await swipe('l') // x=120
+    await swipe('d') // y=510
+    await swipe('l') // x=40 (stays on-screen)
+    await page.touchscreen.touchEnd()
 
     // Verify the alert confirms all 3 thoughts were archived
     await waitForAlertContent('Deleted 3 thoughts.')
