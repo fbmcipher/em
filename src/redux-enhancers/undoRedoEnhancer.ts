@@ -112,9 +112,9 @@ const nthLast = <T>(arr: T[], n: number) => arr[arr.length - n]
 const undoOneReducer = (state: State): State => {
   const { redoPatches, undoPatches } = state
   const lastUndoPatch = nthLast(undoPatches, 1)
-  if (!lastUndoPatch) return state
+  if (!lastUndoPatch || lastUndoPatch.length === 0) return state
   const newState = produce(state, (state: State) => applyPatch(state, lastUndoPatch).newDocument)
-  const correspondingRedoPatch = addActionsToPatch(diffState(newState as Index, state), [...lastUndoPatch[0]?.actions])
+  const correspondingRedoPatch = addActionsToPatch(diffState(newState as Index, state), [...lastUndoPatch[0].actions])
   return {
     ...newState,
     redoPatches: [...redoPatches, correspondingRedoPatch],
@@ -130,9 +130,9 @@ const undoOneReducer = (state: State): State => {
 const redoOneReducer = (state: State): State => {
   const { redoPatches, undoPatches } = state
   const lastRedoPatch = nthLast(redoPatches, 1)
-  if (!lastRedoPatch) return state
+  if (!lastRedoPatch || lastRedoPatch.length === 0) return state
   const newState = produce(state, (state: State) => applyPatch(state, lastRedoPatch).newDocument)
-  const correspondingUndoPatch = addActionsToPatch(diffState(newState as Index, state), [...lastRedoPatch[0]?.actions])
+  const correspondingUndoPatch = addActionsToPatch(diffState(newState as Index, state), [...lastRedoPatch[0].actions])
   return {
     ...newState,
     redoPatches: redoPatches.slice(0, -1),
