@@ -40,12 +40,26 @@ const useFilteredCommands = (
     const visibleCommandsChained = [
       ...globalCommands,
       ...(chainableCommandInProgressInclusive
-        ? [
-            // append chainable commands
-            ...globalCommands
-              .filter(command => chainableCommandInProgressInclusive.isChainable?.(command))
-              .map(command => chainCommand(chainableCommandInProgressInclusive, command)),
-          ]
+        ? (() => {
+            const chainableGestureStr = gestureString(chainableCommandInProgressInclusive)
+            const chainableSubCommands = globalCommands.filter(command =>
+              chainableCommandInProgressInclusive.isChainable?.(command),
+            )
+            // Exact chains: second command's first direction differs from first command's last direction (no coalescing needed)
+            const exactChained = chainableSubCommands
+              .filter(command => !chainableGestureStr.endsWith(gestureString(command)[0]))
+              .map(command => chainCommand(chainableCommandInProgressInclusive, command))
+            // Collect the gesture strings produced by exact concatenation
+            const exactGestureSet = new Set(exactChained.map(gestureString))
+            // Coalesced chains: second command's first direction equals first command's last direction
+            // Exclude coalesced chains whose resulting gesture conflicts with an exact chain,
+            // so that simple concatenation takes precedence over coalescing combos.
+            const coalescedChained = chainableSubCommands
+              .filter(command => chainableGestureStr.endsWith(gestureString(command)[0]))
+              .map(command => chainCommand(chainableCommandInProgressInclusive, command))
+              .filter(command => !exactGestureSet.has(gestureString(command)))
+            return [...exactChained, ...coalescedChained]
+          })()
         : []),
     ]
 
