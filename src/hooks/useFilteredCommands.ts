@@ -13,6 +13,36 @@ const isExecutable = (state: State, command: Command) =>
   (!command.canExecute || command.canExecute(state)) &&
   (command.allowExecuteFromModal || !state.showModal || !state.showMobileCommandUniverse)
 
+/** Generates chained commands while preferring direct concatenation over duplicate-swipe coalescing collisions. */
+const getVisibleChainedCommands = (chainableCommand: Command | undefined): Command[] => {
+  if (!chainableCommand) return []
+
+  const command1Gesture = gestureString(chainableCommand)
+
+  return Object.values(
+    globalCommands
+      .filter(command => chainableCommand.isChainable?.(command))
+      .map(command => {
+        const command2Gesture = gestureString(command)
+        const chained = chainCommand(chainableCommand, command)
+        const chainedGesture = gestureString(chained)
+        return {
+          chained,
+          chainedGesture,
+          isSimpleConcatenation: chainedGesture === command1Gesture + command2Gesture,
+        }
+      })
+      .reduce(
+        (acc, entry) =>
+          !acc[entry.chainedGesture] ||
+          (!acc[entry.chainedGesture].isSimpleConcatenation && entry.isSimpleConcatenation)
+            ? { ...acc, [entry.chainedGesture]: entry }
+            : acc,
+        {} as Record<string, { chained: Command; isSimpleConcatenation: boolean }>,
+      ),
+  ).map(entry => entry.chained)
+}
+
 /** A hook that filters and sorts commands based on a search or the current gesture or keyboard input. */
 const useFilteredCommands = (
   search: string,
@@ -39,14 +69,7 @@ const useFilteredCommands = (
     // if a chainable command is in progress, extend the command list with chained commands (first command + second command)
     const visibleCommandsChained = [
       ...globalCommands,
-      ...(chainableCommandInProgressInclusive
-        ? [
-            // append chainable commands
-            ...globalCommands
-              .filter(command => chainableCommandInProgressInclusive.isChainable?.(command))
-              .map(command => chainCommand(chainableCommandInProgressInclusive, command)),
-          ]
-        : []),
+      ...getVisibleChainedCommands(chainableCommandInProgressInclusive),
     ]
 
     const possibleCommands = visibleCommandsChained.filter(command => {

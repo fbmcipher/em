@@ -105,6 +105,24 @@ vi.mock('../../commands', async () => {
       exec: vi.fn(),
     },
     {
+      id: 'swapParent' as CommandId,
+      label: 'Swap Parent',
+      gesture: 'ul',
+      multicursor: {
+        disallow: true,
+      },
+      exec: vi.fn(),
+    },
+    {
+      id: 'newThoughtAbove' as CommandId,
+      label: 'New Thought (above)',
+      gesture: 'rul',
+      multicursor: {
+        clearMulticursor: true,
+      },
+      exec: vi.fn(),
+    },
+    {
       id: 'cancel' as CommandId,
       label: 'Cancel',
       gesture: undefined,
@@ -588,6 +606,22 @@ describe('useFilteredCommands', () => {
         // Should be 'ldrd' not 'ldrrd' - duplicate 'r' should be collapsed
         expect(selectAllNewThoughtCommand!.gesture).toEqual('ldrd')
         expect(selectAllNewThoughtCommand!.label).toEqual('Select All + New Thought')
+      })
+
+      it('should prioritize simple concatenation over coalesced chained collisions', () => {
+        act(() => {
+          gestureStore.update({ gesture: 'ldrul' })
+        })
+
+        const { result } = renderHook(() => useFilteredCommands('', {}), { wrapper })
+
+        const swapParent = result.current.find(command => command.id === 'swapParent')
+        const newThoughtAbove = result.current.find(command => command.id === 'newThoughtAbove')
+
+        expect(swapParent).toBeDefined()
+        expect(swapParent!.label).toEqual('Select All + Swap Parent')
+        expect(swapParent!.gesture).toEqual('ldrul')
+        expect(newThoughtAbove).toBeUndefined()
       })
     })
 
