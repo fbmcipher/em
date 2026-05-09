@@ -158,6 +158,23 @@ vi.mock('../../commands', async () => {
       ...actualCommand('selectAll'),
       isActive: () => false,
     },
+    // Commands used to test coalescing conflict: both produce gesture 'ldrul' when chained with selectAll ('ldr').
+    // 'exactChainCommand' (gesture 'ul') chains without coalescing; 'coalescedChainCommand' (gesture 'rul') chains
+    // with coalescing (drops the leading 'r' that duplicates the trailing 'r' of selectAll).
+    {
+      id: 'exactChainCommand' as CommandId,
+      label: 'Exact Chain Command',
+      gesture: 'ul',
+      multicursor: true,
+      exec: vi.fn(),
+    },
+    {
+      id: 'coalescedChainCommand' as CommandId,
+      label: 'Coalesced Chain Command',
+      gesture: 'rul',
+      multicursor: true,
+      exec: vi.fn(),
+    },
   ]
   return {
     chainCommand: actual.chainCommand,
@@ -588,6 +605,22 @@ describe('useFilteredCommands', () => {
         // Should be 'ldrd' not 'ldrrd' - duplicate 'r' should be collapsed
         expect(selectAllNewThoughtCommand!.gesture).toEqual('ldrd')
         expect(selectAllNewThoughtCommand!.label).toEqual('Select All + New Thought')
+      })
+
+      it('should prefer exact concatenation over coalesced when both produce the same gesture sequence', () => {
+        // selectAll gesture = 'ldr'
+        // exactChainCommand gesture = 'ul' → chained: 'ldr' + 'ul' = 'ldrul' (no coalescing, 'r' ≠ 'u')
+        // coalescedChainCommand gesture = 'rul' → chained: 'ldr' + 'ul' = 'ldrul' (coalescing, duplicate 'r' dropped)
+        // Both produce gesture 'ldrul', but only the exact (non-coalesced) command should appear.
+        act(() => {
+          gestureStore.update({ gesture: 'ldrul' })
+        })
+
+        const { result } = renderHook(() => useFilteredCommands('', {}), { wrapper })
+
+        const commandIds = result.current.map(cmd => cmd.id)
+        expect(commandIds).toContain('exactChainCommand')
+        expect(commandIds).not.toContain('coalescedChainCommand')
       })
     })
 
