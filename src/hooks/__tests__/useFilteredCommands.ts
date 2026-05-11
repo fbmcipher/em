@@ -36,6 +36,7 @@ import newThoughtCommand from '../../commands/newThought'
 import openMobileCommandUniverseCommand from '../../commands/openMobileCommandUniverse'
 import outdentCommand from '../../commands/outdent'
 import selectAllCommand from '../../commands/selectAll'
+import swapParentCommand from '../../commands/swapParent'
 import store from '../../stores/app'
 import gestureStore from '../../stores/gesture'
 import useFilteredCommands from '../useFilteredCommands'
@@ -153,7 +154,9 @@ vi.mock('../../commands', async () => {
       exec: vi.fn(),
     },
     actualCommand('newThought'),
+    actualCommand('newThoughtAbove'),
     actualCommand('outdent'),
+    actualCommand('swapParent'),
     {
       ...actualCommand('selectAll'),
       isActive: () => false,
@@ -588,6 +591,21 @@ describe('useFilteredCommands', () => {
         // Should be 'ldrd' not 'ldrrd' - duplicate 'r' should be collapsed
         expect(selectAllNewThoughtCommand!.gesture).toEqual('ldrd')
         expect(selectAllNewThoughtCommand!.label).toEqual('Select All + New Thought')
+      })
+
+      it('should prefer simple concatenation over coalescing when both produce the same gesture', () => {
+        // selectAll (ldr) + swapParent (ul) = ldrul via simple concat (no coalescing: r ≠ u)
+        // selectAll (ldr) + newThoughtAbove (rul) = ldrul via coalescing (duplicate r elided)
+        // When swiping ldrul, only swapParent should be highlighted
+        act(() => {
+          gestureStore.update({ gesture: gestureString(selectAllCommand) + gestureString(swapParentCommand) })
+        })
+
+        const { result } = renderHook(() => useFilteredCommands('', {}), { wrapper })
+
+        const commandIds = result.current.map(cmd => cmd.id)
+        expect(commandIds).toContain('swapParent')
+        expect(commandIds).not.toContain('newThoughtAbove')
       })
     })
 
