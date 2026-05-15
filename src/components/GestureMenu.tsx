@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { css } from '../../styled-system/css'
 import { token } from '../../styled-system/tokens'
 import Command from '../@types/Command'
-import { gestureString } from '../commands'
+import { gestureString, matchesGesture } from '../commands'
 import openMobileCommandUniverseCommand from '../commands/openMobileCommandUniverse'
 import useFilteredCommands from '../hooks/useFilteredCommands'
 import gestureStore, {
@@ -28,7 +28,8 @@ const GestureMenu: FC<{
   const gestureInProgress = gestureStore.useSelector(state => state.gesture)
   const fontSize = useSelector(state => state.fontSize)
 
-  const hasMatchingCommand = commands.some(cmd => (gestureInProgress as string) === gestureString(cmd))
+  const hasCanonicalMatchingCommand = commands.some(cmd => (gestureInProgress as string) === gestureString(cmd))
+  const hasMatchingCommand = commands.some(cmd => matchesGesture(cmd, gestureInProgress as string))
 
   return (
     <div
@@ -67,6 +68,7 @@ const GestureMenu: FC<{
                 .endsWith(gestureString(openMobileCommandUniverseCommand))
               const isMobileCommandUniverseMatch =
                 command.id === 'openMobileCommandUniverse' && mobileCommandUniverseInProgress
+              const isAliasMatch = !hasCanonicalMatchingCommand && matchesGesture(command, gestureInProgress as string)
               const isCancelMatch = command.id === 'cancel' && !hasMatchingCommand && !mobileCommandUniverseInProgress
 
               return (
@@ -74,7 +76,10 @@ const GestureMenu: FC<{
                   gestureInProgress={gestureInProgress as string}
                   key={command.id}
                   selected={
-                    isMobileCommandUniverseMatch || gestureInProgress === gestureString(command) || isCancelMatch
+                    isMobileCommandUniverseMatch ||
+                    gestureInProgress === gestureString(command) ||
+                    isAliasMatch ||
+                    isCancelMatch
                   }
                   command={command}
                   isFirstCommand={index === 0}

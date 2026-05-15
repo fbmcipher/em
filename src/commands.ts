@@ -190,6 +190,18 @@ const { commandKeyIndex, commandIdIndex, commandGestureIndex } = index()
 export const gestureString = (command: Command): Gesture =>
   typeof command.gesture === 'string' ? command.gesture : command.gesture?.[0] || ''
 
+/** Gets all gestures for a command, including aliases. */
+export const gestureStrings = (command: Command): Gesture[] =>
+  command.gesture ? (typeof command.gesture === 'string' ? [command.gesture] : command.gesture) : []
+
+/** Returns true if any gesture or alias exactly matches the given sequence. */
+export const matchesGesture = (command: Command, sequence: Gesture | string): boolean =>
+  gestureStrings(command).includes(sequence as Gesture)
+
+/** Returns true if any gesture or alias starts with the given sequence. */
+export const startsWithGesture = (command: Command, sequence: Gesture | string): boolean =>
+  gestureStrings(command).some(gesture => gesture.startsWith(sequence))
+
 /** Get a command by its id. Only use this for dynamic ids that are only known at runtime. If you know the id of the command at compile time, use a static import. */
 export const commandById = (id: CommandId): Command => commandIdIndex[id]
 
@@ -197,16 +209,30 @@ export const commandById = (id: CommandId): Command => commandIdIndex[id]
 export const chainCommand = (command1: Command, command2: Command): Command => {
   const command1GestureString = gestureString(command1)
   const command2GestureString = gestureString(command2)
+  const exactChainedGesture = command1GestureString + command2GestureString
   // collapse duplicate swipes when the command starts with the same character that the first gesture ends with
-  const chainedGesture =
+  const coalescedChainedGesture =
     command1GestureString +
     command2GestureString.slice(command1GestureString.endsWith(command2GestureString[0]) ? 1 : 0)
   const chainedCommand: Command = {
     ...command2,
-    gesture: chainedGesture,
+    gesture:
+      exactChainedGesture === coalescedChainedGesture
+        ? exactChainedGesture
+        : [exactChainedGesture, coalescedChainedGesture],
     label: `${command1.label} + ${command2.label}`,
   }
   return chainedCommand
+}
+
+/** Resolves the chained command suffix for a completed chainable gesture, preferring the exact concatenation over a coalesced alias. */
+export const resolveChainedCommand = (chainableCommand: Command, sequence: Gesture): Command | null => {
+  const chainableGesture = gestureString(chainableCommand)
+  const exactChainedGesture = sequence.toString().slice(chainableGesture.length)
+  const coalescedChainedGesture = sequence.toString().slice(chainableGesture.length - 1)
+  const commandMatch = commandGestureIndex[exactChainedGesture] ?? commandGestureIndex[coalescedChainedGesture]
+
+  return commandMatch ? chainCommand(chainableCommand, commandMatch) : null
 }
 
 const eventNoop = { preventDefault: noop } as Event
@@ -482,13 +508,7 @@ export const handleGestureEnd = ({ sequence, e }: { sequence: Gesture | null; e:
   // chained command
   // only if there is no exact match command
   if (!command && chainableCommandInProgressExclusive) {
-    const chainedGesture1 = gestureString(chainableCommandInProgressExclusive)
-    const chainedGestureCollapsed = sequence!.toString().slice(chainedGesture1.length - 1)
-    const chainedGesture = sequence!.toString().slice(chainedGesture1.length)
-    const commandMatch = commandGestureIndex[chainedGestureCollapsed] ?? commandGestureIndex[chainedGesture]
-    if (commandMatch) {
-      command = chainCommand(chainableCommandInProgressExclusive, commandMatch)
-    }
+    command = resolveChainedCommand(chainableCommandInProgressExclusive, sequence!)
   }
 
   // execute command

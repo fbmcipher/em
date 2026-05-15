@@ -5,7 +5,7 @@ import Command from '../@types/Command'
 import CommandId from '../@types/CommandId'
 import State from '../@types/State'
 import { isTouch } from '../browser'
-import { chainCommand, gestureString, globalCommands } from '../commands'
+import { chainCommand, gestureString, globalCommands, matchesGesture, startsWithGesture } from '../commands'
 import gestureStore from '../stores/gesture'
 
 /** Returns true if the command can be executed. */
@@ -59,8 +59,7 @@ const useFilteredCommands = (
       if (isTouch) {
         if (command.hideFromGestureMenu) return false
 
-        const commandGesture = gestureString(command)
-        return (!platformCommandsOnly || command.gesture) && commandGesture.startsWith(gestureInProgress)
+        return (!platformCommandsOnly || command.gesture) && startsWithGesture(command, gestureInProgress)
       }
       // keyboard
       else {
@@ -97,7 +96,13 @@ const useFilteredCommands = (
       // In gesture mode, help command should always be at the end
       if (isTouch && (command.id === 'openMobileCommandUniverse' || command.id === 'cancel')) return '\x99'
       // always sort exact match to top
-      if (gestureInProgress === command.gesture || search.trim().toLowerCase() === label) return '\x00'
+      if (
+        (isTouch && !!gestureInProgress && gestureInProgress === gestureString(command)) ||
+        search.trim().toLowerCase() === label
+      )
+        return '\x00'
+      // sort exact alias matches after the canonical exact match
+      else if (isTouch && gestureInProgress && matchesGesture(command, gestureInProgress)) return '\x00\x01'
       // sort inactive commands to the bottom alphabetically
       else if (sortActiveCommandsFirst && !isExecutable(store.getState(), command)) return `\x98${label}`
       // sort gesture by length and then label

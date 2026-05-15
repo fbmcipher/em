@@ -33,9 +33,11 @@ import * as browser from '../../browser'
 import { gestureString } from '../../commands'
 import categorizeCommand from '../../commands/categorize'
 import newThoughtCommand from '../../commands/newThought'
+import newThoughtAboveCommand from '../../commands/newThoughtAbove'
 import openMobileCommandUniverseCommand from '../../commands/openMobileCommandUniverse'
 import outdentCommand from '../../commands/outdent'
 import selectAllCommand from '../../commands/selectAll'
+import swapParentCommand from '../../commands/swapParent'
 import store from '../../stores/app'
 import gestureStore from '../../stores/gesture'
 import useFilteredCommands from '../useFilteredCommands'
@@ -158,11 +160,15 @@ vi.mock('../../commands', async () => {
       ...actualCommand('selectAll'),
       isActive: () => false,
     },
+    actualCommand('newThoughtAbove'),
+    actualCommand('swapParent'),
   ]
   return {
     chainCommand: actual.chainCommand,
     commandById: actual.commandById,
     gestureString: actual.gestureString,
+    matchesGesture: actual.matchesGesture,
+    startsWithGesture: actual.startsWithGesture,
     globalCommands,
   }
 })
@@ -585,9 +591,42 @@ describe('useFilteredCommands', () => {
         expect(commandIds).toContain('newThought')
 
         const selectAllNewThoughtCommand = result.current.find(command => command.id === 'newThought')
-        // Should be 'ldrd' not 'ldrrd' - duplicate 'r' should be collapsed
-        expect(selectAllNewThoughtCommand!.gesture).toEqual('ldrd')
+        // Exact concatenation should be canonical, with the coalesced form retained as an alias.
+        expect(selectAllNewThoughtCommand!.gesture).toEqual(['ldrrd', 'ldrd'])
         expect(selectAllNewThoughtCommand!.label).toEqual('Select All + New Thought')
+      })
+
+      it('should keep the exact concatenation as the canonical chained gesture when coalescing is ambiguous', () => {
+        act(() => {
+          gestureStore.update({ gesture: `${gestureString(selectAllCommand)}${gestureString(swapParentCommand)}` })
+        })
+
+        const { result } = renderHook(() => useFilteredCommands('', {}), { wrapper })
+
+        const selectAllSwapParentCommand = result.current.find(command => command.id === 'swapParent')
+        const selectAllNewThoughtAboveCommand = result.current.find(command => command.id === 'newThoughtAbove')
+
+        expect(selectAllSwapParentCommand!.gesture).toEqual(
+          `${gestureString(selectAllCommand)}${gestureString(swapParentCommand)}`,
+        )
+        expect(selectAllNewThoughtAboveCommand!.gesture).toEqual([
+          `${gestureString(selectAllCommand)}${gestureString(newThoughtAboveCommand)}`,
+          `${gestureString(selectAllCommand)}${gestureString(swapParentCommand)}`,
+        ])
+      })
+
+      it('should sort the exact chained match ahead of a coalesced alias match', () => {
+        act(() => {
+          gestureStore.update({ gesture: `${gestureString(selectAllCommand)}${gestureString(swapParentCommand)}` })
+        })
+
+        const { result } = renderHook(() => useFilteredCommands('', {}), { wrapper })
+
+        const labels = result.current.map(command => command.label)
+
+        expect(labels.indexOf('Select All + Swap Parent')).toBeLessThan(
+          labels.indexOf('Select All + New Thought (above)'),
+        )
       })
     })
 
