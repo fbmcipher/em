@@ -96,22 +96,27 @@ const useAutocrop = (spaceAbove: number): number => {
   // extend spaceAbove to be at least the height of the viewport so that there is room to scroll up
   const spaceAboveExtended = Math.max(spaceAbove, viewportHeight)
 
-  const spaceAboveLast = useRef(spaceAboveExtended)
+  // The CSS translateY applied to the LayoutTree to crop empty space above.
+  // When spaceAbove < viewportHeight (typical case, not deep in hierarchy), autocrop is always 0.
+  // This means iOS Safari address bar appearance changes (which alter viewportHeight by ~50px) will not
+  // change autocrop and will not trigger the scroll compensation below, preventing stutter during momentum scroll.
+  const autocrop = -spaceAboveExtended + viewportHeight
 
-  // when spaceAbove changes, scroll by the same amount so that the thoughts appear to stay in the same place
+  const autocropLast = useRef(autocrop)
+
+  // when autocrop changes, scroll by the same amount so that the thoughts appear to stay in the same place
   useEffect(
     () => {
-      const spaceAboveDelta = spaceAboveExtended - spaceAboveLast.current
-      window.scrollTo({ top: scrollY - spaceAboveDelta })
-      spaceAboveLast.current = spaceAboveExtended
+      const autocropDelta = autocrop - autocropLast.current
+      window.scrollTo({ top: scrollY + autocropDelta })
+      autocropLast.current = autocrop
     },
     // do not trigger effect on scrollY change
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [spaceAboveExtended],
+    [autocrop],
   )
 
-  // add a full viewport height's space above to ensure that there is room to scroll by the same amount as spaceAbove
-  return -spaceAboveExtended + viewportHeight
+  return autocrop
 }
 
 /** A hook that returns a ref to the content div and updates the viewport store's layoutTreeTop property on mount. */
