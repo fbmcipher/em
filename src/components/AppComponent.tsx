@@ -74,7 +74,10 @@ const shouldCancelGesture = (
   const state = store.getState()
   const distance = state.fontSize * 2
   return (
-    (x && y && selection.isNear(x, y, distance)) ||
+    // Do not check isNear when the keyboard is open.
+    // iOS autocorrect can leave a non-collapsed selection on the corrected word after acceptance,
+    // which would incorrectly cancel gestures near the caret. See: https://github.com/cybersemics/em/issues/4222
+    (!state.isKeyboardOpen && !!(x && y && selection.isNear(x, y, distance))) ||
     state.longPress !== LongPressState.Inactive ||
     !!state.showModal ||
     state.showSidebar ||
