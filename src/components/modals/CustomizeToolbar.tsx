@@ -164,7 +164,7 @@ const ModalCustomizeToolbar: FC = () => {
                 position: 'relative',
               })}
             >
-              <CommandTableOnly commands={commands} />
+              <CommandTableOnly commands={commands} customize />
             </div>
           </div>
         </FadeTransition>

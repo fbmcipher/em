@@ -89,7 +89,10 @@ const CommandItem: FC<{
     },
   })
 
-  const isActive = command.isActive?.(store.getState())
+  // In the Customize Toolbar context, always show the primary label/description regardless of the current app state.
+  // The Customize Toolbar is for discovering/rearranging commands, not acting on them, so showing the inverse
+  // label (e.g. "Unmark as done" instead of "Mark as done") based on an unrelated cursor position is misleading.
+  const isActive = !customize && command.isActive?.(store.getState())
   const disabled = useSelector(state => !isExecutable(state, command))
 
   const label = command.labelInverse && isActive ? command.labelInverse : command.label
