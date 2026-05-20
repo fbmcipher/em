@@ -57,6 +57,29 @@ export const isCollapsed = (): boolean => !!window.getSelection()?.isCollapsed
 /** Returns true if there is an active selection. */
 export const isActive = (): boolean => !!window.getSelection()?.focusNode
 
+/** Saves the current non-collapsed selection range. Returns null if there is no non-collapsed selection. */
+export const saveRange = (): Range | null => {
+  const sel = window.getSelection()
+  return sel && sel.rangeCount > 0 && !sel.isCollapsed ? sel.getRangeAt(0).cloneRange() : null
+}
+
+/** Removes all selection ranges without triggering blur or other side effects. */
+export const removeRanges = (): void => {
+  window.getSelection()?.removeAllRanges()
+}
+
+/** Restores a saved range. No-op if the range is invalid or the DOM has changed. */
+export const restoreRange = (range: Range): void => {
+  const sel = window.getSelection()
+  if (!sel) return
+  sel.removeAllRanges()
+  try {
+    sel.addRange(range)
+  } catch {
+    // Range may be invalid if the DOM has changed since the range was saved.
+  }
+}
+
 /** Traverses a node's parents until it finds an element node that is not a formatting tag. Returns null if a suitable parent cannot be found. */
 const getEditableCandidate = (node?: EventTarget | null) => {
   if (!isHTMLElement(node)) return null
