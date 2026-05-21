@@ -483,6 +483,21 @@ export const html = () => {
   return currentHtml
 }
 
+/** Returns a clone of the current selection range, or null if there is no selection. */
+export const saveRange = (): Range | null => {
+  const sel = window.getSelection()
+  return sel && sel.rangeCount > 0 ? sel.getRangeAt(0).cloneRange() : null
+}
+
+/** Restores a previously saved selection range. NOOP if range is null or undefined. */
+export const restoreRange = (range: Range | null): void => {
+  if (!range) return
+  const sel = window.getSelection()
+  if (!sel) return
+  sel.removeAllRanges()
+  sel.addRange(range)
+}
+
 /** Returns the bounding rectangle for the current browser selection. */
 export const getBoundingClientRect = () => {
   const selection = window.getSelection()
