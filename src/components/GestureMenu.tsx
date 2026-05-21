@@ -5,7 +5,9 @@ import { token } from '../../styled-system/tokens'
 import Command from '../@types/Command'
 import { gestureString } from '../commands'
 import openMobileCommandUniverseCommand from '../commands/openMobileCommandUniverse'
+import * as selection from '../device/selection'
 import useFilteredCommands from '../hooks/useFilteredCommands'
+import store from '../stores/app'
 import gestureStore, {
   onGestureMenuEntered,
   onGestureMenuExited,
@@ -13,6 +15,7 @@ import gestureStore, {
   startGestureMenuExit,
 } from '../stores/gesture'
 import storageModel from '../stores/storageModel'
+import equalPath from '../util/equalPath'
 import CommandItem from './CommandItem'
 import FadeTransition from './FadeTransition'
 import PopupBase from './PopupBase'
@@ -181,6 +184,37 @@ const GestureMenuWithTransition: FC = () => {
     recentCommands,
     sortActiveCommandsFirst: true,
   })
+
+  // Refs used to save and restore text selection when the gesture menu opens and closes.
+  const savedActiveElementRef = useRef<HTMLElement | null>(null)
+  const savedRangeRef = useRef<Range | null>(null)
+  const savedCursorRef = useRef(store.getState().cursor)
+
+  // When the gesture menu opens, save the active element and selection range, then blur to hide native iOS text selection handles and toolbar.
+  useEffect(() => {
+    if (showGestureMenu) {
+      savedRangeRef.current = selection.saveRange()
+      savedActiveElementRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+      savedCursorRef.current = store.getState().cursor
+      savedActiveElementRef.current?.blur()
+    }
+  }, [showGestureMenu])
+
+  // When the gesture menu exit animation completes, restore the text selection if the cursor hasn't changed (i.e. the gesture was cancelled rather than executed).
+  useEffect(() => {
+    if (animationState === 'hidden' && savedActiveElementRef.current) {
+      if (
+        document.contains(savedActiveElementRef.current) &&
+        equalPath(store.getState().cursor, savedCursorRef.current)
+      ) {
+        savedActiveElementRef.current.focus()
+        selection.restoreRange(savedRangeRef.current)
+      }
+      savedRangeRef.current = null
+      savedActiveElementRef.current = null
+      savedCursorRef.current = null
+    }
+  }, [animationState])
 
   // Sync Redux showGestureMenu to gestureStore animation state
   useEffect(() => {
