@@ -10,6 +10,27 @@ import setSortPreference from '../setSortPreference'
 import swapParent from '../swapParent'
 import toggleContextView from '../toggleContextView'
 
+it('shows alert when child thought is empty', () => {
+  const steps = [newThought({ value: 'a' }), newThought({ value: '', insertNewSubthought: true }), swapParent]
+
+  const stateNew = reducerFlow(steps)(initialState())
+  expect(stateNew.alert?.value).toBe('Swap Parent cannot be performed on empty thoughts.')
+})
+
+it('shows alert when parent thought is empty', () => {
+  const steps = [newThought({ value: '' }), newThought({ value: 'b', insertNewSubthought: true }), swapParent]
+
+  const stateNew = reducerFlow(steps)(initialState())
+  expect(stateNew.alert?.value).toBe('Swap Parent cannot be performed on empty thoughts.')
+})
+
+it('shows alert when both thoughts are empty', () => {
+  const steps = [newThought({ value: '' }), newThought({ value: '', insertNewSubthought: true }), swapParent]
+
+  const stateNew = reducerFlow(steps)(initialState())
+  expect(stateNew.alert?.value).toBe('Swap Parent cannot be performed on empty thoughts.')
+})
+
 it('no-op if cursor is not set', () => {
   const text = `
   - x
