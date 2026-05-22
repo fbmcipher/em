@@ -257,6 +257,34 @@ export const save = (): SavedSelection | null => {
   }
 }
 
+/** Returns a clone of the current non-collapsed selection range, or null if there is no range selection. */
+export const saveRange = (): Range | null => {
+  const sel = window.getSelection()
+  if (sel && sel.rangeCount > 0) {
+    const range = sel.getRangeAt(0)
+    return range.collapsed ? null : range.cloneRange()
+  }
+  return null
+}
+
+/** Removes all selection ranges without blurring the focused element. */
+export const removeAllRanges = (): void => {
+  window.getSelection()?.removeAllRanges()
+}
+
+/** Restores the selection from a saved Range. No-op if the range is null or the start node is no longer in the document. */
+export const restoreRange = (range: Range | null): void => {
+  if (!range || !range.startContainer.isConnected) return
+  const sel = window.getSelection()
+  if (!sel) return
+  sel.removeAllRanges()
+  try {
+    sel.addRange(range)
+  } catch {
+    // The range may be invalid if the DOM changed while the range was saved
+  }
+}
+
 /**
  * Recursively iterates the nodes children and returns focusNode and offset where the relative offset ends.
  */

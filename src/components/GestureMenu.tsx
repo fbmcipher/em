@@ -3,8 +3,10 @@ import { useSelector } from 'react-redux'
 import { css } from '../../styled-system/css'
 import { token } from '../../styled-system/tokens'
 import Command from '../@types/Command'
+import { isTouch } from '../browser'
 import { gestureString } from '../commands'
 import openMobileCommandUniverseCommand from '../commands/openMobileCommandUniverse'
+import * as selection from '../device/selection'
 import useFilteredCommands from '../hooks/useFilteredCommands'
 import gestureStore, {
   onGestureMenuEntered,
@@ -171,6 +173,8 @@ function Overlay() {
 const GestureMenuWithTransition: FC = () => {
   const popupRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
+  /** Saves the text selection range when the gesture menu opens so it can be restored on close. */
+  const savedRangeRef = useRef<Range | null>(null)
 
   const showGestureMenu = useSelector(state => state.showGestureMenu)
   const animationState = gestureStore.useSelector(state => state.gestureMenuAnimationState)
@@ -198,6 +202,29 @@ const GestureMenuWithTransition: FC = () => {
   useEffect(() => {
     if (animationState === 'entering') {
       onGestureMenuEntered()
+    }
+  }, [animationState])
+
+  // On touch devices, hide the text selection when the gesture menu opens to prevent the native
+  // text selection toolbar (e.g. iOS Cut/Copy/Paste) from overlapping the gesture menu.
+  // Restore the saved selection when the gesture menu is fully dismissed.
+  useEffect(() => {
+    if (!isTouch) return
+    if (showGestureMenu) {
+      // Save the current non-collapsed selection range before clearing it
+      savedRangeRef.current = selection.saveRange()
+      // Remove the selection to dismiss the native text selection toolbar
+      selection.removeAllRanges()
+    }
+  }, [showGestureMenu])
+
+  useEffect(() => {
+    if (!isTouch) return
+    // Restore the saved selection after the gesture menu exit animation completes
+    if (animationState === 'hidden' && savedRangeRef.current) {
+      const range = savedRangeRef.current
+      savedRangeRef.current = null
+      selection.restoreRange(range)
     }
   }, [animationState])
 
