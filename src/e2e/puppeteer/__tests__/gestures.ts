@@ -93,4 +93,21 @@ describe('chaining commands', () => {
   - 
 `)
   })
+
+  it('Select All + Archive should archive all thoughts, not invoke New Thought', async () => {
+    // Create three root-level thoughts
+    await gesture(newThoughtCommand)
+    await keyboard.type('One')
+    await gesture(newThoughtCommand)
+    await keyboard.type('Two')
+    await gesture(newThoughtCommand)
+    await keyboard.type('Three')
+
+    // Perform the Select All (ldr) + Archive (ldl) chained gesture = ldrldl
+    await gesture('ldr' + 'ldl')
+
+    const exported = await exportThoughts()
+    // Thoughts should be moved to =archive, not have a new empty thought appended
+    expect(exported).toContain('=archive')
+  })
 })
