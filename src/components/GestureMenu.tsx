@@ -5,6 +5,7 @@ import { token } from '../../styled-system/tokens'
 import Command from '../@types/Command'
 import { gestureString } from '../commands'
 import openMobileCommandUniverseCommand from '../commands/openMobileCommandUniverse'
+import * as selection from '../device/selection'
 import useFilteredCommands from '../hooks/useFilteredCommands'
 import gestureStore, {
   onGestureMenuEntered,
@@ -171,6 +172,8 @@ function Overlay() {
 const GestureMenuWithTransition: FC = () => {
   const popupRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
+  /** Saves the non-collapsed text selection range so it can be restored after the gesture menu closes. */
+  const savedSelectionRangeRef = useRef<Range | null>(null)
 
   const showGestureMenu = useSelector(state => state.showGestureMenu)
   const animationState = gestureStore.useSelector(state => state.gestureMenuAnimationState)
@@ -185,6 +188,13 @@ const GestureMenuWithTransition: FC = () => {
   // Sync Redux showGestureMenu to gestureStore animation state
   useEffect(() => {
     if (showGestureMenu && animationState === 'hidden') {
+      // Save and hide the text selection when the gesture menu opens, so that the iOS text
+      // selection tools do not overlap with the gesture menu.
+      const savedRange = selection.saveRange()
+      if (savedRange) {
+        savedSelectionRangeRef.current = savedRange
+        selection.removeRanges()
+      }
       // Start enter animation only when menu opens and we're in hidden state
       startGestureMenuEnter()
     } else if (!showGestureMenu && animationState !== 'hidden' && animationState !== 'exiting') {
@@ -192,6 +202,14 @@ const GestureMenuWithTransition: FC = () => {
       startGestureMenuExit()
     }
   }, [showGestureMenu, animationState])
+
+  // Restore the text selection when the gesture menu finishes closing.
+  useEffect(() => {
+    if (animationState === 'hidden' && savedSelectionRangeRef.current) {
+      selection.restoreRange(savedSelectionRangeRef.current)
+      savedSelectionRangeRef.current = null
+    }
+  }, [animationState])
 
   // Transition from 'entering' to 'visible' to trigger the fade-in animation.
   // Component mounts with in={false} when 'entering', then in={true} when 'visible'.
