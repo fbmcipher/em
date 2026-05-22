@@ -44,6 +44,13 @@ const swapParent = (state: State): State => {
   const parentThought = getThoughtById(state, parentId)
   if (!childThought || !parentThought) return state
 
+  // Disallow swapping empty thoughts to prevent duplicate-merge errors in moveThought.
+  // When two thoughts share an empty value, normalizeThought('') === normalizeThought('') triggers
+  // a merge that deletes one thought, leaving the cursor pointing to a nonexistent id.
+  if (!childThought.value || !parentThought.value) {
+    return alert(state, { value: 'Swap Parent cannot be performed on empty thoughts.' })
+  }
+
   // Get only direct children of the child thought (grandchildren)
   const childChildren = getChildrenRanked(state, childId)
 
