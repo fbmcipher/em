@@ -28,6 +28,41 @@ it('no-op if cursor is not set', () => {
       - c`)
 })
 
+it('shows alert when current thought is empty', () => {
+  const steps = [
+    importText({ text: '- a' }),
+    setCursor(['a']),
+    newThought({ value: '', insertNewSubthought: true }),
+    swapParent,
+  ]
+
+  const stateNew = reducerFlow(steps)(initialState())
+  const exported = exportContext(stateNew, [HOME_TOKEN], 'text/plain')
+
+  // Tree should remain unchanged
+  expect(exported).toBe(`- ${HOME_TOKEN}
+  - a
+    - `)
+
+  // Alert should be shown
+  expect(stateNew.alert?.value).toBe('Swap Parent cannot be performed on empty thoughts.')
+})
+
+it('shows alert when parent thought is empty', () => {
+  const steps = [newThought({ value: '' }), newThought({ value: 'b', insertNewSubthought: true }), swapParent]
+
+  const stateNew = reducerFlow(steps)(initialState())
+  const exported = exportContext(stateNew, [HOME_TOKEN], 'text/plain')
+
+  // Tree should remain unchanged
+  expect(exported).toBe(`- ${HOME_TOKEN}
+  - 
+    - b`)
+
+  // Alert should be shown
+  expect(stateNew.alert?.value).toBe('Swap Parent cannot be performed on empty thoughts.')
+})
+
 it('no-op if cursor is a root thought', () => {
   const text = `
   - x
