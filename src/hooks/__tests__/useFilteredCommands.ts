@@ -36,6 +36,7 @@ import newThoughtCommand from '../../commands/newThought'
 import openMobileCommandUniverseCommand from '../../commands/openMobileCommandUniverse'
 import outdentCommand from '../../commands/outdent'
 import selectAllCommand from '../../commands/selectAll'
+import swapParentCommand from '../../commands/swapParent'
 import store from '../../stores/app'
 import gestureStore from '../../stores/gesture'
 import useFilteredCommands from '../useFilteredCommands'
@@ -154,6 +155,8 @@ vi.mock('../../commands', async () => {
     },
     actualCommand('newThought'),
     actualCommand('outdent'),
+    actualCommand('swapParent'),
+    actualCommand('newThoughtAbove'),
     {
       ...actualCommand('selectAll'),
       isActive: () => false,
@@ -588,6 +591,29 @@ describe('useFilteredCommands', () => {
         // Should be 'ldrd' not 'ldrrd' - duplicate 'r' should be collapsed
         expect(selectAllNewThoughtCommand!.gesture).toEqual('ldrd')
         expect(selectAllNewThoughtCommand!.label).toEqual('Select All + New Thought')
+      })
+
+      it('should prefer exact concatenation over coalesced chain when both produce the same gesture', () => {
+        // selectAll gesture is 'ldr', swapParent gesture is 'ul', newThoughtAbove gesture is 'rul'
+        // selectAll + swapParent: 'ldr' + 'ul' = 'ldrul' (exact, no coalescing — 'r' ≠ 'u')
+        // selectAll + newThoughtAbove: 'ldr' + 'rul' → 'ldrul' (coalesced — duplicate 'r' removed)
+        // When both chains produce the same gesture, only the exact chain should be shown
+        act(() => {
+          gestureStore.update({ gesture: gestureString(selectAllCommand) + gestureString(swapParentCommand) })
+        })
+
+        const { result } = renderHook(() => useFilteredCommands('', {}), { wrapper })
+
+        const swapParentResult = result.current.find(cmd => cmd.id === 'swapParent')
+        expect(swapParentResult).toBeDefined()
+        expect(swapParentResult!.label).toEqual('Select All + Swap Parent')
+
+        // newThoughtAbove should not appear as a chained command — its coalesced gesture conflicts
+        // with swapParent's exact concatenation gesture, so exact concatenation takes precedence
+        const newThoughtAboveResult = result.current.find(
+          cmd => cmd.id === 'newThoughtAbove' && cmd.label.startsWith('Select All +'),
+        )
+        expect(newThoughtAboveResult).toBeUndefined()
       })
     })
 

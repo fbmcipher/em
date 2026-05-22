@@ -485,7 +485,9 @@ export const handleGestureEnd = ({ sequence, e }: { sequence: Gesture | null; e:
     const chainedGesture1 = gestureString(chainableCommandInProgressExclusive)
     const chainedGestureCollapsed = sequence!.toString().slice(chainedGesture1.length - 1)
     const chainedGesture = sequence!.toString().slice(chainedGesture1.length)
-    const commandMatch = commandGestureIndex[chainedGestureCollapsed] ?? commandGestureIndex[chainedGesture]
+    // Prefer exact concatenation (chainedGesture) over coalesced form (chainedGestureCollapsed).
+    // When both forms produce the same gesture string, the non-coalesced command should take precedence.
+    const commandMatch = commandGestureIndex[chainedGesture] ?? commandGestureIndex[chainedGestureCollapsed]
     if (commandMatch) {
       command = chainCommand(chainableCommandInProgressExclusive, commandMatch)
     }
