@@ -35,6 +35,7 @@ styled-system-studio
 # WDIO
 wdio.log
 browserstack.log
+browserstack.err
 local.log
 /log
 /logs

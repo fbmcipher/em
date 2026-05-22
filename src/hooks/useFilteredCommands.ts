@@ -37,16 +37,31 @@ const useFilteredCommands = (
 
   const possibleCommandsSorted = useMemo(() => {
     // if a chainable command is in progress, extend the command list with chained commands (first command + second command)
+    const chainedCommandsWithMeta = chainableCommandInProgressInclusive
+      ? globalCommands
+          .filter(command => chainableCommandInProgressInclusive.isChainable?.(command))
+          .map(command => {
+            const g1 = gestureString(chainableCommandInProgressInclusive)
+            const g2 = gestureString(command)
+            // Coalescing occurs when the chainable command's gesture ends with the same character that
+            // the second command's gesture starts with (see chainCommand).
+            const isCoalesced = !!g2 && g1.endsWith(g2[0])
+            return { command: chainCommand(chainableCommandInProgressInclusive, command), isCoalesced }
+          })
+      : []
+
+    // Collect gesture strings of exact (non-coalesced) chained commands so that coalesced duplicates can be excluded.
+    // Simple concatenation takes precedence over coalescing combos when both produce the same gesture sequence.
+    const exactChainedGestures = new Set(
+      chainedCommandsWithMeta.filter(({ isCoalesced }) => !isCoalesced).map(({ command }) => gestureString(command)),
+    )
+
     const visibleCommandsChained = [
       ...globalCommands,
-      ...(chainableCommandInProgressInclusive
-        ? [
-            // append chainable commands
-            ...globalCommands
-              .filter(command => chainableCommandInProgressInclusive.isChainable?.(command))
-              .map(command => chainCommand(chainableCommandInProgressInclusive, command)),
-          ]
-        : []),
+      ...chainedCommandsWithMeta
+        // Exclude a coalesced chained command when an exact (non-coalesced) chained command with the same gesture exists.
+        .filter(({ command, isCoalesced }) => !isCoalesced || !exactChainedGestures.has(gestureString(command)))
+        .map(({ command }) => command),
     ]
 
     const possibleCommands = visibleCommandsChained.filter(command => {
