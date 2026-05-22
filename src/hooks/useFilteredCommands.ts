@@ -37,17 +37,38 @@ const useFilteredCommands = (
 
   const possibleCommandsSorted = useMemo(() => {
     // if a chainable command is in progress, extend the command list with chained commands (first command + second command)
-    const visibleCommandsChained = [
-      ...globalCommands,
-      ...(chainableCommandInProgressInclusive
-        ? [
-            // append chainable commands
-            ...globalCommands
-              .filter(command => chainableCommandInProgressInclusive.isChainable?.(command))
-              .map(command => chainCommand(chainableCommandInProgressInclusive, command)),
-          ]
-        : []),
-    ]
+
+    // Build chained commands, tracking whether duplicate-swipe coalescing occurred for each.
+    const chainableGestureString = chainableCommandInProgressInclusive
+      ? gestureString(chainableCommandInProgressInclusive)
+      : ''
+    const chainedWithCoalescingInfo = chainableCommandInProgressInclusive
+      ? globalCommands
+          .filter(command => chainableCommandInProgressInclusive.isChainable?.(command))
+          .map(command => {
+            const chained = chainCommand(chainableCommandInProgressInclusive, command)
+            const chainedGestureString = gestureString(chained)
+            const isCoalesced = chainableGestureString + gestureString(command) !== chainedGestureString
+            return { chained, chainedGestureString, isCoalesced }
+          })
+      : []
+
+    // Collect gestures that are produced by simple concatenation (no coalescing).
+    const nonCoalescedGestures = new Set(
+      chainedWithCoalescingInfo
+        .filter(({ isCoalesced }) => !isCoalesced)
+        .map(({ chainedGestureString }) => chainedGestureString),
+    )
+
+    // Simple concatenation takes precedence over coalescing combos: exclude coalesced chained commands
+    // if a non-coalesced chained command with the same gesture already exists.
+    const chainedCommands = chainedWithCoalescingInfo
+      .filter(
+        ({ chainedGestureString, isCoalesced }) => !isCoalesced || !nonCoalescedGestures.has(chainedGestureString),
+      )
+      .map(({ chained }) => chained)
+
+    const visibleCommandsChained = [...globalCommands, ...chainedCommands]
 
     const possibleCommands = visibleCommandsChained.filter(command => {
       // Always include help command in gesture mode
