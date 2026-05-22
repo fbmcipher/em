@@ -101,12 +101,14 @@ When the cursor is deep, many ancestors and ancestor-siblings are hidden by auto
 
 1. `LayoutTree` sums the heights of every thought above the cursor where `sizes[key].isVisible === false && !belowCursor`. Result: `spaceAbove`.
 2. `useAutocrop` extends that to at least one viewport height (so there's still room to scroll up): `spaceAboveExtended = max(spaceAbove, viewportHeight)`.
-3. When `spaceAboveExtended` changes, `window.scrollTo({ top: window.scrollY - delta })` keeps visible thoughts positionally stable.
-4. The hook returns `-spaceAboveExtended + viewportHeight`, applied as `transform: translateY(...)` on the outer container.
+3. `autocrop = -spaceAboveExtended + viewportHeight`. When `autocrop` changes, `window.scrollTo({ top: window.scrollY + delta })` keeps visible thoughts positionally stable.
+4. The hook returns `autocrop`, applied as `transform: translateY(...)` on the outer container.
 
 Net effect: the outer container is shifted up off-screen by exactly enough that one viewport's worth of empty space sits above the cursor. The user can scroll into that empty space; visible thoughts don't jump.
 
-History: the original autocrop work is [issue #1751](https://github.com/cybersemics/em/issues/1751); the uncle-handling refinement is [issue #3055](https://github.com/cybersemics/em/issues/3055).
+**iOS Safari note:** In the typical case (`spaceAbove < viewportHeight`, not deep in hierarchy), `autocrop = -viewportHeight + viewportHeight = 0`. Changes to `viewportHeight` caused by the iOS Safari address bar appearing/disappearing during momentum scroll don't change `autocrop`, so no compensating `scrollTo` is issued and momentum scrolling proceeds unimpeded.
+
+History: the original autocrop work is [issue #1751](https://github.com/cybersemics/em/issues/1751); the uncle-handling refinement is [issue #3055](https://github.com/cybersemics/em/issues/3055); the iOS momentum scroll fix is [issue #3201](https://github.com/cybersemics/em/issues/3201).
 
 ## Indent (horizontal autocrop)
 
