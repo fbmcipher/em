@@ -5,6 +5,7 @@ import { token } from '../../styled-system/tokens'
 import Command from '../@types/Command'
 import { gestureString } from '../commands'
 import openMobileCommandUniverseCommand from '../commands/openMobileCommandUniverse'
+import * as selection from '../device/selection'
 import useFilteredCommands from '../hooks/useFilteredCommands'
 import gestureStore, {
   onGestureMenuEntered,
@@ -183,11 +184,22 @@ const GestureMenuWithTransition: FC = () => {
   })
 
   // Sync Redux showGestureMenu to gestureStore animation state
+  // Save any non-collapsed text selection when the gesture menu opens so it can be restored when the menu closes.
+  // This hides the native iOS text selection tools (Cut/Copy/Paste bar) while the gesture menu is visible.
+  const savedRangeRef = useRef<Range | null>(null)
   useEffect(() => {
     if (showGestureMenu && animationState === 'hidden') {
+      // Save and clear text selection to hide the native iOS Cut/Copy/Paste bar while the gesture menu is open
+      savedRangeRef.current = selection.saveRange()
+      if (savedRangeRef.current) {
+        selection.clearRange()
+      }
       // Start enter animation only when menu opens and we're in hidden state
       startGestureMenuEnter()
     } else if (!showGestureMenu && animationState !== 'hidden' && animationState !== 'exiting') {
+      // Restore the saved text selection when the gesture menu closes
+      selection.restoreRange(savedRangeRef.current)
+      savedRangeRef.current = null
       // Start exit animation only when menu closes and we're not already hidden or exiting
       startGestureMenuExit()
     }

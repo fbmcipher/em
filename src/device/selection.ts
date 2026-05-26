@@ -257,6 +257,31 @@ export const save = (): SavedSelection | null => {
   }
 }
 
+/** Saves the current non-collapsed selection Range so it can be restored later with restoreRange. Returns null if there is no selection or the selection is collapsed (i.e. a caret). */
+export const saveRange = (): Range | null => {
+  const sel = window.getSelection()
+  if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return null
+  return sel.getRangeAt(0).cloneRange()
+}
+
+/** Restores a Range saved by saveRange. Removes any existing ranges before adding the restored range. Does nothing if range is null. Wrapped in try-catch to handle detached nodes gracefully. */
+export const restoreRange = (range: Range | null): void => {
+  if (!range) return
+  const sel = window.getSelection()
+  if (!sel) return
+  try {
+    sel.removeAllRanges()
+    sel.addRange(range)
+  } catch {
+    // Ignore errors from detached nodes (e.g. if the thought was deleted while the gesture menu was open)
+  }
+}
+
+/** Removes all ranges from the selection without blurring the active element. Unlike clear(), this preserves focus so the selection can be restored later with restoreRange. */
+export const clearRange = (): void => {
+  window.getSelection()?.removeAllRanges()
+}
+
 /**
  * Recursively iterates the nodes children and returns focusNode and offset where the relative offset ends.
  */
