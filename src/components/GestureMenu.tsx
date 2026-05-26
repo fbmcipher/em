@@ -3,9 +3,13 @@ import { useSelector } from 'react-redux'
 import { css } from '../../styled-system/css'
 import { token } from '../../styled-system/tokens'
 import Command from '../@types/Command'
+import Path from '../@types/Path'
 import { gestureString } from '../commands'
 import openMobileCommandUniverseCommand from '../commands/openMobileCommandUniverse'
+import * as selection from '../device/selection'
+import { SavedRange } from '../device/selection'
 import useFilteredCommands from '../hooks/useFilteredCommands'
+import store from '../stores/app'
 import gestureStore, {
   onGestureMenuEntered,
   onGestureMenuExited,
@@ -13,6 +17,7 @@ import gestureStore, {
   startGestureMenuExit,
 } from '../stores/gesture'
 import storageModel from '../stores/storageModel'
+import equalPath from '../util/equalPath'
 import CommandItem from './CommandItem'
 import FadeTransition from './FadeTransition'
 import PopupBase from './PopupBase'
@@ -171,6 +176,10 @@ function Overlay() {
 const GestureMenuWithTransition: FC = () => {
   const popupRef = useRef<HTMLDivElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
+  /** Saved non-collapsed selection range to restore after the gesture menu closes. */
+  const savedRangeRef = useRef<SavedRange | null>(null)
+  /** Saved cursor path to detect if a command was executed that moved the cursor. */
+  const savedCursorRef = useRef<Path | null>(null)
 
   const showGestureMenu = useSelector(state => state.showGestureMenu)
   const animationState = gestureStore.useSelector(state => state.gestureMenuAnimationState)
@@ -181,6 +190,30 @@ const GestureMenuWithTransition: FC = () => {
     recentCommands,
     sortActiveCommandsFirst: true,
   })
+
+  // When the gesture menu opens, save and clear any non-collapsed text selection so that it does
+  // not overlap with the gesture menu or the iOS text selection toolbar.
+  useEffect(() => {
+    if (showGestureMenu) {
+      savedCursorRef.current = store.getState().cursor
+      savedRangeRef.current = selection.saveRange()
+      if (savedRangeRef.current) {
+        selection.clearRange()
+      }
+    }
+  }, [showGestureMenu])
+
+  // When the gesture menu animation fully exits, restore the saved selection if the cursor has not
+  // moved (i.e. no gesture command was executed that changed the thought).
+  useEffect(() => {
+    if (animationState === 'hidden' && savedRangeRef.current) {
+      if (equalPath(store.getState().cursor, savedCursorRef.current)) {
+        selection.restoreRange(savedRangeRef.current)
+      }
+      savedRangeRef.current = null
+      savedCursorRef.current = null
+    }
+  }, [animationState])
 
   // Sync Redux showGestureMenu to gestureStore animation state
   useEffect(() => {

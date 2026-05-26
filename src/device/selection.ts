@@ -21,6 +21,11 @@ export interface SavedSelection {
   offset: number
 }
 
+/** A saved non-collapsed selection range that can be restored with selection.restoreRange. */
+export interface SavedRange {
+  range: Range
+}
+
 /** Gets the padding of an element as an array of numbers [top, right, bottom, left]. */
 const getElementPaddings = (element: HTMLElement): [number, number, number, number] => {
   const paddings = window.getComputedStyle(element, null).getPropertyValue('padding').split('px').map(Number)
@@ -510,4 +515,25 @@ export const isNear = (
   const bottom = rect.bottom + distance
 
   return x >= left && y >= top && x <= right && y <= bottom
+}
+
+/** Saves the current non-collapsed selection range. Returns null if the selection is absent or collapsed. */
+export const saveRange = (): SavedRange | null => {
+  const sel = window.getSelection()
+  if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return null
+  return { range: sel.getRangeAt(0).cloneRange() }
+}
+
+/** Removes all selection ranges without blurring the active element. Used to hide the text selection and iOS text toolbar without closing the keyboard. */
+export const clearRange = (): void => {
+  window.getSelection()?.removeAllRanges()
+}
+
+/** Restores a previously saved non-collapsed selection range. No-op if savedRange is null. */
+export const restoreRange = (savedRange: SavedRange | null): void => {
+  if (!savedRange) return
+  const sel = window.getSelection()
+  if (!sel) return
+  sel.removeAllRanges()
+  sel.addRange(savedRange.range)
 }
