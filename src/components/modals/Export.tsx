@@ -1,3 +1,4 @@
+import { Keyboard } from '@capacitor/keyboard'
 import ClipboardJS from 'clipboard'
 import React, {
   FC,
@@ -21,7 +22,7 @@ import ThoughtId from '../../@types/ThoughtId'
 import { alertActionCreator as alert } from '../../actions/alert'
 import { closeModalActionCreator as closeModal } from '../../actions/closeModal'
 import { errorActionCreator as error } from '../../actions/error'
-import { isMac, isTouch } from '../../browser'
+import { isCapacitor, isIOS, isMac, isTouch } from '../../browser'
 import { HOME_PATH, HOME_TOKEN } from '../../constants'
 import replicateTree from '../../data-providers/data-helpers/replicateTree'
 import download from '../../device/download'
@@ -469,9 +470,19 @@ const ModalExport: FC<{ simplePaths: SimplePath[] }> = ({ simplePaths }) => {
   // const [publishedCIDs, setPublishedCIDs] = useState([] as string[])
 
   /** Shares or downloads when the export button is clicked. */
-  const onExportClick = () => {
+  const onExportClick = async () => {
     // use mobile share if it is available
     if (navigator.share) {
+      // On iOS Capacitor, the virtual keyboard does not automatically dismiss when a native
+      // share sheet is presented via navigator.share. Blur the focused element and explicitly
+      // hide the keyboard, then wait for the animation to complete before invoking the share
+      // sheet so it is not obscured by the keyboard.
+      if (isCapacitor() && isIOS) {
+        const activeEl = document.activeElement as HTMLElement | null
+        activeEl?.blur()
+        await Keyboard.hide()
+        await new Promise<void>(resolve => setTimeout(resolve, 300))
+      }
       navigator.share({
         text: exportContent!,
         title: titleShort,
