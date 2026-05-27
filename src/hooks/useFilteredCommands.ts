@@ -37,16 +37,29 @@ const useFilteredCommands = (
 
   const possibleCommandsSorted = useMemo(() => {
     // if a chainable command is in progress, extend the command list with chained commands (first command + second command)
+    const chainedCommands = chainableCommandInProgressInclusive
+      ? globalCommands
+          .filter(command => chainableCommandInProgressInclusive.isChainable?.(command))
+          .map(command => {
+            const chain1 = gestureString(chainableCommandInProgressInclusive)
+            const chain2 = gestureString(command)
+            // Detect coalescing: the chainCommand function elides the leading direction of command2 if it matches the trailing direction of command1.
+            const isCoalesced = !!chain2 && chain1.endsWith(chain2[0])
+            return { cmd: chainCommand(chainableCommandInProgressInclusive, command), isCoalesced }
+          })
+      : []
+
+    // Collect gesture strings of non-coalesced chained commands.
+    // Non-coalesced (simple concatenation) takes priority: remove any coalesced command that produces the same gesture string.
+    const nonCoalescedGestureStrings = new Set(
+      chainedCommands.filter(({ isCoalesced }) => !isCoalesced).map(({ cmd }) => gestureString(cmd)),
+    )
+
     const visibleCommandsChained = [
       ...globalCommands,
-      ...(chainableCommandInProgressInclusive
-        ? [
-            // append chainable commands
-            ...globalCommands
-              .filter(command => chainableCommandInProgressInclusive.isChainable?.(command))
-              .map(command => chainCommand(chainableCommandInProgressInclusive, command)),
-          ]
-        : []),
+      ...chainedCommands
+        .filter(({ cmd, isCoalesced }) => !isCoalesced || !nonCoalescedGestureStrings.has(gestureString(cmd)))
+        .map(({ cmd }) => cmd),
     ]
 
     const possibleCommands = visibleCommandsChained.filter(command => {

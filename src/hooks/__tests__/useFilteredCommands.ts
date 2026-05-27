@@ -36,6 +36,7 @@ import newThoughtCommand from '../../commands/newThought'
 import openMobileCommandUniverseCommand from '../../commands/openMobileCommandUniverse'
 import outdentCommand from '../../commands/outdent'
 import selectAllCommand from '../../commands/selectAll'
+import swapParentCommand from '../../commands/swapParent'
 import store from '../../stores/app'
 import gestureStore from '../../stores/gesture'
 import useFilteredCommands from '../useFilteredCommands'
@@ -153,7 +154,9 @@ vi.mock('../../commands', async () => {
       exec: vi.fn(),
     },
     actualCommand('newThought'),
+    actualCommand('newThoughtAbove'),
     actualCommand('outdent'),
+    actualCommand('swapParent'),
     {
       ...actualCommand('selectAll'),
       isActive: () => false,
@@ -586,6 +589,47 @@ describe('useFilteredCommands', () => {
 
         const selectAllNewThoughtCommand = result.current.find(command => command.id === 'newThought')
         // Should be 'ldrd' not 'ldrrd' - duplicate 'r' should be collapsed
+        expect(selectAllNewThoughtCommand!.gesture).toEqual('ldrd')
+        expect(selectAllNewThoughtCommand!.label).toEqual('Select All + New Thought')
+      })
+
+      it('should prefer simple concatenation over coalesced combo when both produce the same gesture', () => {
+        // Select All (ldr) + Swap Parent (ul) = ldrul (simple concatenation, no coalescing)
+        // Select All (ldr) + New Thought Above (rul) = ldrul (coalescing elides duplicate 'r')
+        // Both produce 'ldrul', but only Swap Parent (simple concatenation) should be shown.
+        act(() => {
+          gestureStore.update({ gesture: 'ldrul' })
+        })
+
+        const { result } = renderHook(() => useFilteredCommands('', {}), { wrapper })
+
+        const commandIds = result.current.map(cmd => cmd.id)
+
+        // Swap Parent should be present (simple concatenation)
+        expect(commandIds).toContain('swapParent')
+        const selectAllSwapParentCommand = result.current.find(command => command.id === 'swapParent')
+        expect(selectAllSwapParentCommand!.gesture).toEqual(
+          (selectAllCommand.gesture as string) + gestureString(swapParentCommand),
+        )
+        expect(selectAllSwapParentCommand!.label).toEqual('Select All + Swap Parent')
+
+        // New Thought Above should NOT be present: its coalesced gesture conflicts with Swap Parent's simple gesture
+        expect(commandIds).not.toContain('newThoughtAbove')
+      })
+
+      it('should still show coalesced commands when no simple concatenation conflict exists', () => {
+        // Select All (ldr) + New Thought (rd) = ldrd (coalesced from ldrrd)
+        // No other command has gesture 'd' that would produce ldrd via simple concatenation, so it should appear.
+        act(() => {
+          gestureStore.update({ gesture: 'ldrd' })
+        })
+
+        const { result } = renderHook(() => useFilteredCommands('', {}), { wrapper })
+
+        const commandIds = result.current.map(cmd => cmd.id)
+        expect(commandIds).toContain('newThought')
+
+        const selectAllNewThoughtCommand = result.current.find(command => command.id === 'newThought')
         expect(selectAllNewThoughtCommand!.gesture).toEqual('ldrd')
         expect(selectAllNewThoughtCommand!.label).toEqual('Select All + New Thought')
       })
