@@ -169,6 +169,7 @@ const CommandTable = ({ customize, onSelect, selectedCommand, viewType = 'table'
   const commands = useFilteredCommands(search, { platformCommandsOnly: true })
   const [sortOrder, setSortOrder] = useState<CommandSortType>('type')
   const [isMobileGestures, setIsMobileGestures] = useState(isTouch)
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false)
 
   return (
     <div>
@@ -182,8 +183,12 @@ const CommandTable = ({ customize, onSelect, selectedCommand, viewType = 'table'
           zIndex: 1,
         })}
       >
-        <SearchCommands onInput={setSearch} />
-        <SortButton onSortChange={setSortOrder} />
+        <SearchCommands onInput={setSearch} onFocus={() => setIsSortDropdownOpen(false)} />
+        <SortButton
+          onSortChange={setSortOrder}
+          isDropdownOpen={isSortDropdownOpen}
+          setDropdownOpen={setIsSortDropdownOpen}
+        />
         {viewType !== 'grid' && (
           <MobileGestureToggle isMobileGestures={isMobileGestures} setIsMobileGestures={setIsMobileGestures} />
         )}

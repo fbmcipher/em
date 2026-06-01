@@ -4,7 +4,7 @@ import { token } from '../../styled-system/tokens'
 import SearchIcon from './icons/SearchIcon'
 
 /** Search bar for filtering commands. */
-const SearchCommands: FC<{ onInput?: (value: string) => void }> = ({ onInput }) => {
+const SearchCommands: FC<{ onInput?: (value: string) => void; onFocus?: () => void }> = ({ onInput, onFocus }) => {
   return (
     <div id='search' className={css({ flexGrow: 1, border: 'solid 1px {colors.gray50}', borderRadius: '8px' })}>
       <div className={css({ position: 'relative' })}>
@@ -24,6 +24,7 @@ const SearchCommands: FC<{ onInput?: (value: string) => void }> = ({ onInput }) 
         <input
           type='text'
           placeholder='Search commands...'
+          onFocus={onFocus}
           onInput={(e: React.FormEvent<HTMLInputElement>) => {
             onInput?.(e.currentTarget.value)
           }}

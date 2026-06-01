@@ -9,27 +9,27 @@ import SortIcon from './icons/SortIcon'
 
 interface SortButtonProps {
   onSortChange: (sortOrder: CommandSortType) => void
+  isDropdownOpen: boolean
+  setDropdownOpen: (value: boolean) => void
 }
 
 /**
  * SortButton component.
  * */
-const SortButton = ({ onSortChange }: SortButtonProps) => {
+const SortButton = ({ onSortChange, isDropdownOpen, setDropdownOpen }: SortButtonProps) => {
   const isLightTheme = useSelector(state => theme(state) === 'Light')
-  const [isDropdownOpen, setDropdownOpen] = useState(false)
   const [selectedSort, setSelectedSort] = useState<CommandSortType>('type')
 
-  /** Closes the sort dropdown when the user scrolls. */
-  const handleScroll = () => {
-    setDropdownOpen(false)
-  }
-
   useEffect(() => {
+    /** Closes the sort dropdown when the user scrolls. */
+    const handleScroll = () => {
+      setDropdownOpen(false)
+    }
     window.addEventListener('scroll', handleScroll, true)
     return () => {
       window.removeEventListener('scroll', handleScroll, true)
     }
-  }, [])
+  }, [setDropdownOpen])
 
   /**
    * Handles the sort change.
