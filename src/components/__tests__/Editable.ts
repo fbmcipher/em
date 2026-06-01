@@ -78,3 +78,33 @@ it('inserts emoji spacing immediately and allows Backspace at the emoji boundary
 
   expect(editable.textContent).toBe('🧠Hello')
 })
+
+it('re-applies emoji spacing after IME composition reverts the DOM update', async () => {
+  act(() => {
+    windowEvent('keydown', { key: 'Enter' })
+  })
+
+  const editable = (await findThoughtByText(''))!
+  expect(editable).toBeVisible()
+
+  // type "Hello" so the thought is non-empty
+  const user = userEvent.setup({ delay: null })
+  await user.type(editable, 'Hello')
+  await act(vi.runAllTimersAsync)
+
+  // Simulate inserting an emoji at the beginning via IME composition.
+  // 1. compositionstart – browser enters composition mode
+  fireEvent.compositionStart(editable)
+
+  // 2. input – our onChangeHandler runs, detects the emoji, inserts a space, and dispatches editThought({force:true})
+  editable.innerHTML = '🧠Hello'
+  fireEvent.input(editable, { bubbles: true })
+
+  // 3. Simulate the browser reverting the innerHTML (as happens during IME composition on mobile)
+  editable.innerHTML = '🧠Hello'
+
+  // 4. compositionend – browser releases composition control; our handler should re-apply the space
+  fireEvent.compositionEnd(editable)
+
+  expect(editable.textContent).toBe('🧠 Hello')
+})

@@ -136,6 +136,8 @@ const Editable = ({
   const hasMulticursor = useSelector(hasMulticursorSelector)
   // store the old value so that we have a transcendental head when it is changed
   const oldValueRef = useRef(value)
+  // tracks whether an emoji space was inserted during the current IME composition, so compositionend can re-apply it if the browser reverted the DOM update
+  const isEmojiSpaceAddedRef = useRef(false)
   const nullRef = useRef<HTMLInputElement>(null)
   const contentRef = editableRef || nullRef
   const isCursor = useSelector(state => equalPath(path, state.cursor))
@@ -385,6 +387,7 @@ const Editable = ({
         const newValue = stripEmptyFormattingTags(valueWithEmojiSpace)
         const emojiSpaceAdded = valueWithEmojiSpace !== trimmedWrappedValue
         const emojiSpaceInsertionIndex = emojiSpaceAdded ? valueWithEmojiSpace.indexOf(' ') : null
+        if (emojiSpaceAdded) isEmojiSpaceAddedRef.current = true
 
         /* The realtime editingValue must always be updated (and not short-circuited) since oldValueRef is throttled. Otherwise, editingValueStore becomes stale and heights are not recalculated in VirtualThought.
 
@@ -549,6 +552,22 @@ const Editable = ({
   )
 
   /**
+   * Re-applies the emoji space if the browser reverted the DOM update during IME composition.
+   * On mobile, inserting an emoji via the keyboard may trigger an IME composition event. While the
+   * browser is in composition mode, it can revert any programmatic innerHTML updates. The space added
+   * by addEmojiSpace is lost until blur, when onBlur re-syncs the DOM. This handler fires on
+   * compositionend (after the browser releases composition control) to immediately re-apply the space
+   * so it appears without needing to close the keyboard.
+   */
+  const handleCompositionEnd = useCallback(() => {
+    if (!isEmojiSpaceAddedRef.current) return
+    isEmojiSpaceAddedRef.current = false
+    if (contentRef.current && contentRef.current.innerHTML !== oldValueRef.current) {
+      dispatch({ type: 'editableRender' })
+    }
+  }, [contentRef, dispatch])
+
+  /**
    * Sets the cursor on focus.
    * Prevented by touchend event above for hidden thoughts.
    */
@@ -692,6 +711,7 @@ const Editable = ({
       placeholder={placeholder}
       onFocus={onFocus}
       onBlur={onBlur}
+      onCompositionEnd={handleCompositionEnd}
       onChange={onChangeHandler}
       onCopy={onCopy}
       onCut={e => {
