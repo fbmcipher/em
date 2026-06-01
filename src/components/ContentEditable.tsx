@@ -8,7 +8,7 @@ interface ContentEditableProps extends Omit<React.HTMLProps<HTMLDivElement>, 'on
   disabled?: boolean
   innerRef?: React.RefObject<HTMLDivElement | null>
   onChange: (originalEvt: ContentEditableEvent) => void
-  /** Stops the dragover event from propagating to ancestors on desktop. By default, dragover events are allowed and bubble up to ancestors where
+  /** Stops the dragover event from propagating to ancestors on desktop and prevents it from bubbling on mobile (iOS/Android). By default, dragover events are allowed and bubble up to ancestors where
    * they may affect other drag-and-drop behavior (e.g. react-dnd). Stopping dragover events may be useful to allow native browser behavior such
    * as text selection drag-and-drop if react-dnd would otherwise interfere. Setting this to true will also prevent the default drop events on mobile. */
   stopDragOver?: boolean
@@ -98,9 +98,18 @@ const ContentEditable = React.memo(
 
           if (props.onBlur) props.onBlur(event)
         }}
-        // Allow dragging a text selection within an editable (#3530)
+        // Allow dragging a text selection within an editable on desktop and iOS (#3530)
         // https://github.com/react-dnd/react-dnd/issues/3157
-        onDragOver={isTouch || disabled || stopDragOver ? undefined : e => e.stopPropagation()}
+        // On iOS, e.preventDefault() is required to signal a valid drop target; without it the browser cancels the drop and no insertion caret is shown.
+        // stopPropagation prevents react-dnd ancestors from seeing the event on desktop (react-dnd-touch-backend uses touch events, not drag events, so this is harmless on iOS).
+        onDragOver={
+          disabled || stopDragOver
+            ? undefined
+            : e => {
+                e.preventDefault()
+                e.stopPropagation()
+              }
+        }
         onDrop={isTouch && stopDragOver ? e => e.preventDefault() : undefined}
         onInput={handleInput}
         onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
