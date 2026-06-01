@@ -21,6 +21,7 @@ import ThoughtId from '../../@types/ThoughtId'
 import { alertActionCreator as alert } from '../../actions/alert'
 import { closeModalActionCreator as closeModal } from '../../actions/closeModal'
 import { errorActionCreator as error } from '../../actions/error'
+import { keyboardOpenActionCreator as keyboardOpen } from '../../actions/keyboardOpen'
 import { isMac, isTouch } from '../../browser'
 import { HOME_PATH, HOME_TOKEN } from '../../constants'
 import replicateTree from '../../data-providers/data-helpers/replicateTree'
@@ -476,16 +477,19 @@ const ModalExport: FC<{ simplePaths: SimplePath[] }> = ({ simplePaths }) => {
         text: exportContent!,
         title: titleShort,
       })
+      // Dismiss the keyboard before closing the modal so that the native share sheet is not obscured by the virtual keyboard.
+      // isKeyboardOpen must be cleared here because closeModal does not clear it, and useEditMode would otherwise
+      // refocus the cursor editable (reopening the keyboard) as soon as the modal unmounts.
+      dispatch([keyboardOpen({ value: false }), closeModal()])
+      return
     }
     // otherwise download the data with createObjectURL
-    else {
-      try {
-        download(exportContent!, `em-${title}-${timestamp()}.${selected.extension}`, selected.type)
-      } catch (err) {
-        const e = err as Error
-        dispatch(error({ value: e.message }))
-        console.error('Download Error', e.message)
-      }
+    try {
+      download(exportContent!, `em-${title}-${timestamp()}.${selected.extension}`, selected.type)
+    } catch (err) {
+      const e = err as Error
+      dispatch(error({ value: e.message }))
+      console.error('Download Error', e.message)
     }
 
     dispatch(closeModal())
