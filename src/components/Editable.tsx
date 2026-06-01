@@ -485,6 +485,19 @@ const Editable = ({
             simplePath,
             cursorOffset: cursorOffsetWithEmojiSpace,
           })
+
+          // When addEmojiSpace inserts a space, update the DOM immediately so the user sees the space
+          // before the virtual keyboard closes. Without this, the DOM is only corrected in onBlur (keyboard close),
+          // because ContentEditable's allowInnerHTMLChange guard prevents the async React re-render from writing
+          // the updated HTML while the user is still typing.
+          // Guard against the Backspace case: if oldValue === newValue, editThought was a no-op (the user
+          // just deleted the space), so we must not re-insert it by overwriting the DOM here.
+          if (emojiSpaceAdded && contentRef.current && oldValue !== newValue) {
+            contentRef.current.innerHTML = newValue
+            if (cursorOffsetWithEmojiSpace != null) {
+              selection.set(contentRef.current, { offset: cursorOffsetWithEmojiSpace })
+            }
+          }
         } else {
           throttledChangeRef.current(newValue, { rank, simplePath })
         }
