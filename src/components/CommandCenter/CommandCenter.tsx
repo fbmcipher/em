@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { motion, useTransform } from 'motion/react'
 import pluralize from 'pluralize'
-import { FC, useCallback, useRef } from 'react'
+import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import { Sheet, SheetRef } from 'react-modal-sheet'
 import { useDispatch, useSelector } from 'react-redux'
 import { css } from '../../../styled-system/css'
@@ -114,6 +114,20 @@ const CommandCenter = () => {
   const sheetRef = useRef<SheetRef>(null)
   const { height, opacity, blurHeight } = useSheetTransforms(sheetRef)
 
+  /*
+   * Force a re-render once the Sheet ref is attached so the sheet transforms (opacity, height, blur)
+   * subscribe to the sheet's motion values. The transforms are computed motion values that only
+   * subscribe to the motion values they read during a render (see motion's useComputed). On the very
+   * first render sheetRef.current is still null, so they subscribe to nothing. On first mount this
+   * self-corrects because the component re-renders many times before the Command Center opens, but
+   * when the Command Center is unmounted while a modal is open and then remounted on close, there is
+   * no further re-render after the ref attaches — leaving the overlay stuck transparent (#4331).
+   */
+  const [, setSheetMounted] = useState(false)
+  useEffect(() => {
+    setSheetMounted(true)
+  }, [])
+
   /** Prevent native page scroll when dragging the sheet. The page body is scrollable, and without this the browser scrolls the body on touchmove, stealing touch from the sheet's drag handler. React touch handlers are passive so we need a non-passive listener via addEventListener. */
   const preventTouchMoveRef = useCallback((el: HTMLDivElement | null) => {
     if (!el) return
@@ -182,6 +196,7 @@ const CommandCenter = () => {
             style={{ height }}
           />
           <motion.div
+            data-testid='command-center-overlay'
             className={css({
               position: 'fixed',
               pointerEvents: 'none',
