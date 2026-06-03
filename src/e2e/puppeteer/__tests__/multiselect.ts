@@ -4,8 +4,8 @@ import emulate from '../helpers/emulate'
 import longPressThought from '../helpers/longPressThought'
 import multiselectThoughts from '../helpers/multiselectThoughts'
 import paste from '../helpers/paste'
-import waitForSelector from '../helpers/waitForSelector'
 import waitForEditable from '../helpers/waitForEditable'
+import waitForSelector from '../helpers/waitForSelector'
 import { page } from '../session'
 
 vi.setConfig({ testTimeout: 20000, hookTimeout: 20000 })
@@ -60,7 +60,7 @@ describe('mobile only', () => {
     expect(highlightedBullets.length).toBe(2)
   })
 
-  it.skip('keeps command center overlay visible after closing settings modal', async () => {
+  it('keeps command center overlay visible after closing settings modal', async () => {
     await paste(`
       - a
       - b

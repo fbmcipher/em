@@ -113,6 +113,23 @@ const CommandCenter = () => {
   const isTutorialOn = useSelector(isTutorial)
   const sheetRef = useRef<SheetRef>(null)
   const { height, opacity, blurHeight } = useSheetTransforms(sheetRef)
+  const overlayOpacityBeforeModalRef = useRef(0)
+
+  if (!showCommandCenter) {
+    overlayOpacityBeforeModalRef.current = 0
+  }
+
+  const overlayOpacity = useTransform(opacity, latestOpacity => {
+    if (latestOpacity > 0) {
+      overlayOpacityBeforeModalRef.current = latestOpacity
+    }
+
+    if (showCommandCenter && latestOpacity === 0) {
+      return overlayOpacityBeforeModalRef.current || 1
+    }
+
+    return latestOpacity
+  })
 
   /** Prevent native page scroll when dragging the sheet. The page body is scrollable, and without this the browser scrolls the body on touchmove, stealing touch from the sheet's drag handler. React touch handlers are passive so we need a non-passive listener via addEventListener. */
   const preventTouchMoveRef = useCallback((el: HTMLDivElement | null) => {
@@ -193,7 +210,7 @@ const CommandCenter = () => {
               width: '100%',
               bottom: 0,
             })}
-            style={{ opacity }}
+            style={{ opacity: overlayOpacity }}
           />
           <Sheet.Container
             ref={preventTouchMoveRef}
