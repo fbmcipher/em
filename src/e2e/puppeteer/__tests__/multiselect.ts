@@ -1,8 +1,10 @@
 import { KnownDevices } from 'puppeteer'
+import click from '../helpers/click'
 import emulate from '../helpers/emulate'
 import longPressThought from '../helpers/longPressThought'
 import multiselectThoughts from '../helpers/multiselectThoughts'
 import paste from '../helpers/paste'
+import waitForSelector from '../helpers/waitForSelector'
 import waitForEditable from '../helpers/waitForEditable'
 import { page } from '../session'
 
@@ -56,5 +58,39 @@ describe('mobile only', () => {
     const highlightedBullets = await page.$$('[aria-label="bullet"][data-highlighted="true"]')
 
     expect(highlightedBullets.length).toBe(2)
+  })
+
+  it.skip('keeps command center overlay visible after closing settings modal', async () => {
+    await paste(`
+      - a
+      - b
+      - c
+      `)
+
+    const a = await waitForEditable('a')
+    const b = await waitForEditable('b')
+
+    await longPressThought(a, { edge: 'right' })
+    await longPressThought(b, { edge: 'right' })
+
+    await page.waitForFunction(
+      () => {
+        const panel = document.querySelector('[data-testid=command-center-panel]')
+        return panel?.textContent?.includes('2 thoughts selected') ?? false
+      },
+      { timeout: 6000 },
+    )
+
+    await click('[data-testid="toolbar-icon"][aria-label="Settings"]')
+    await waitForSelector('[aria-label="modal-content"]')
+    await click('.modal__root > a')
+    await waitForSelector('[aria-label="modal-content"]', { hidden: true })
+
+    const overlayOpacity = await page.$eval(
+      '[data-testid="command-center-overlay"]',
+      el => getComputedStyle(el).opacity,
+    )
+
+    expect(Number(overlayOpacity)).toBeGreaterThan(0)
   })
 })

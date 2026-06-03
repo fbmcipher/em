@@ -182,6 +182,7 @@ const CommandCenter = () => {
             style={{ height }}
           />
           <motion.div
+            data-testid='command-center-overlay'
             className={css({
               position: 'fixed',
               pointerEvents: 'none',
