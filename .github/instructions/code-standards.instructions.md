@@ -19,6 +19,19 @@
 - Use `const`; avoid `let`.
 - Avoid `for` loops; use `map`, `filter`, `reduce`.
 - Use point-free style when appropriate: Avoid `setTimeout(() => cb())`; use `setTimeout(cb)`.
+- When building an array with conditional elements, put the condition inside the array using the spread operator rather than branching the entire array construction. This avoids duplicating non-conditional elements across branches. `...(condition ? [value] : [])` naturally falls back to `...[]` (nothing) when false.
+  ```ts
+  // ❌ Duplicates non-conditional elements across branches
+  arr: condition
+    ? [...items.slice(0, -1), newItem]
+    : [...items.slice(0, -1)],
+
+  // ✅ Condition inside the array; no duplication
+  arr: [
+    ...items.slice(0, -1),
+    ...(condition ? [newItem] : []),
+  ],
+  ```
 
 ### React
 
