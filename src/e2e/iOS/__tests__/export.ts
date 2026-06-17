@@ -1,5 +1,5 @@
 /**
- * iOS Safari export/share modal tests.
+ * IOS Safari export/share modal tests.
  * Uses WDIO test runner with Mocha framework.
  */
 import type { Element } from 'webdriverio'
