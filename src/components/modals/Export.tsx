@@ -662,6 +662,7 @@ const ModalExport: FC<{ simplePaths: SimplePath[] }> = ({ simplePaths }) => {
             backgroundColor: 'fg',
           })}
           disabled={exportContent === null}
+          data-testid='export-share'
           {...fastClick(onExportClick)}
         >
           {exportWord}
