@@ -583,7 +583,7 @@ const ThoughtContainer = ({
 
       <ThoughtPositioner path={path} hideBullet={hideBullet}>
         {!(publish && simplePath.length === 0) && (!leaf || !isPublishChild) && !hideBullet && (
-          <div style={alignmentTransition.bullet}>
+          <div style={alignmentTransition.bullet as React.CSSProperties}>
             <Bullet
               dragSource={dragSourceBullet}
               longPressProps={dragHoldResult.props}
@@ -604,7 +604,7 @@ const ThoughtContainer = ({
 
         <DropHover isHovering={isHovering} prevChildId={prevChildId} simplePath={simplePath} />
 
-        <div style={alignmentTransition.editable}>
+        <div style={alignmentTransition.editable as React.CSSProperties}>
           <StaticThought
             allowSingleContext={allowSingleContext}
             dragSource={dragSourceEditable}
