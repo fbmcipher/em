@@ -125,6 +125,14 @@ yarn build
 yarn servebuild
 ```
 
+Deploy with firebase:
+
+```sh
+npm install -g firebase-tools
+
+yarn deploy:staging2
+```
+
 ## Component Hierarchy
 
 To the user, a thought just consists of a bullet, text, and superscript indicating the number of contexts the thought appears in. The component hierarchy, however, consists of several components that control positioning (LayoutTree), window virtualization (VirtualThought), and superscript positioning (ThoughtAnnotation). The deep hierarchy ensures that if a thought is hidden, complex selectors and other computations are short-circuited.
@@ -172,11 +180,13 @@ This project uses some custom dependencies that are overridden via `resolutions`
 ### Tarball URL Format
 
 GitHub tarball URLs follow this format:
+
 ```
 https://codeload.github.com/[owner]/[repo]/tar.gz/[commit-hash]
 ```
 
 Example:
+
 - Repository: `https://github.com/magic-akari/page-lifecycle`
 - Commit hash: `50b50421bdeab3d211a57e81a277f699638373b0`
 - Tarball URL: `https://codeload.github.com/magic-akari/page-lifecycle/tar.gz/50b50421bdeab3d211a57e81a277f699638373b0`
@@ -184,6 +194,7 @@ Example:
 ### Updating Dependencies
 
 To update these custom dependencies:
+
 1. Check the source repository for new commits
 2. Get the new commit hash
 3. Update the tarball URL in the `resolutions` section of `package.json`

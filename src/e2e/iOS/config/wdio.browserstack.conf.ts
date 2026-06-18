@@ -135,9 +135,12 @@ export const config: WebdriverIO.Config = {
         projectName: process.env.BROWSERSTACK_PROJECT_NAME || 'em',
         buildName: process.env.BROWSERSTACK_BUILD_NAME || `Local - ${user} - ${date}`,
         sessionName: 'iOS Safari Tests',
-        debug: true,
-        networkLogs: true,
-        consoleLogs: 'verbose',
+        // The device reaches the dev server over the public cloudflared HTTPS URL (onPrepare), so
+        // BrowserStack Local (`local: true`) is not used on this path. These flags collect diagnostic
+        // data on BrowserStack's web dashboard, which we don't need/use.
+        debug: false,
+        networkLogs: false,
+        consoleLogs: 'errors',
         idleTimeout: 60,
       },
     },

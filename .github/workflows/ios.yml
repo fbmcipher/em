@@ -12,10 +12,21 @@ on:
         description: 'Optional ID for tracking repeated runs'
         required: false
 
+# Serialize BrowserStack runs repo-wide. Every run draws from the same shared parallel-session pool, so
+# overlapping runs (a main push + PR syncs + reruns) can over-subscribe it and fail with session-creation
+# timeouts. Allowing one active run at a time keeps total live sessions within maxInstances.
+# cancel-in-progress: false queues runs instead of cancelling them, so no run is dropped.
+concurrency:
+  group: browserstack
+  cancel-in-progress: false
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   CI: true
   COPILOT_AGENT_FIREWALL_ALLOW_LIST_ADDITIONS: googlechromelabs.github.io,storage.googleapis.com
+  # Activates the console proxy (src/util/consoleProxy.ts), which we need because BrowserStack
+  # can't access iOS console logs.
+  VITE_BROWSER_CONSOLE_CAPTURE: 1
 
 jobs:
   run:
