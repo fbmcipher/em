@@ -1,1 +1,6 @@
-yarn lint
+#!/bin/sh
+# Raise Node's heap ceiling so `yarn lint` (tsc + eslint across the whole repo) doesn't
+# OOM at the ~2GB default in memory-constrained CI / coding-agent environments. It's a
+# ceiling, not an allocation, so this is safe on dev machines too. Any NODE_OPTIONS the
+# caller already set is preserved (and a later --max-old-space-size wins, so it's overridable).
+NODE_OPTIONS="--max-old-space-size=6144${NODE_OPTIONS:+ $NODE_OPTIONS}" yarn lint
