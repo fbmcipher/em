@@ -112,18 +112,31 @@ jobs:
       # Start the Vite dev server in the background so it's already running
       # when the agent session begins. Logs go to /tmp/dev-server.log.
       # Vite may serve HTTP or HTTPS depending on local config, so probe both.
-      - name: Start dev server
+      - name: Start dev server (HTTPS by default)
         run: |
+          # Free port 3000 of any stale dev server first. A leftover HTTP server on :3000 (e.g. from a
+          # cached/previous setup) would otherwise keep the port and `yarn start`'s HTTPS server would
+          # bind elsewhere — the BrowserStack device, hitting bs-local.com:3000, would then load plaintext
+          # against an HTTPS-expecting IPA and the webview stays blank.
+          fuser -k 3000/tcp 2>/dev/null || true
+          pkill -f 'vite' 2>/dev/null || true
+          sleep 1
           nohup yarn start >/tmp/dev-server.log 2>&1 &
           disown
-          for i in {1..30}; do
-            if curl -fsS -o /dev/null http://localhost:3000 2>/dev/null \
-              || curl -fsSk -o /dev/null https://localhost:3000 2>/dev/null; then
-              echo "Dev server ready after ${i}s"
+          # The dev server serves HTTPS by default (vite.config basic-ssl); HTTP=1 opts out. Probe the
+          # EXPECTED scheme specifically so a plaintext server can't pass the check and mask the problem.
+          if [ -n "${HTTP:-}" ]; then scheme=http; probe='curl -fsS'; else scheme=https; probe='curl -fsSk'; fi
+          for i in {1..40}; do
+            if $probe -o /dev/null "${scheme}://localhost:3000" 2>/dev/null; then
+              echo "Dev server ready on ${scheme}://localhost:3000 after ${i}s"
               exit 0
             fi
             sleep 1
           done
-          echo "Dev server did not come up within 30s — log:" >&2
+          echo "Dev server did not come up on ${scheme}://localhost:3000 within 40s." >&2
+          echo "--- probe diagnostics ---" >&2
+          curl -sS  -o /dev/null -w 'http  -> %{http_code}\n' http://localhost:3000  >&2 2>&1 || true
+          curl -sSk -o /dev/null -w 'https -> %{http_code}\n' https://localhost:3000 >&2 2>&1 || true
+          echo "--- dev-server log ---" >&2
           cat /tmp/dev-server.log >&2
           exit 1
