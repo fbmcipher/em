@@ -48,7 +48,7 @@ The first five steps below are sequential and must be performed **in order**, be
 
 Once both gates are satisfied (or determined not to apply), continue with the lifecycle below:
 
-- **Do not create a new branch.** The platform has already started this session on a working branch with a **draft pull request open against it**. Stay on that branch — confirm with `git rev-parse --abbrev-ref HEAD` — and make every commit there; creating your own branch strands your work on a branch no PR tracks (a frequent past failure). Find the existing PR with `gh pr list --head "$(git rev-parse --abbrev-ref HEAD)" --state all` and iterate on it. Only if that lookup returns nothing should you open one with the `runtime-tools-create_pull_request` tool.
+- **Do not create a new branch.** The platform has already started this session on a working branch with a **draft pull request open against it**. Stay on that branch — confirm with `git rev-parse --abbrev-ref HEAD` — and make every commit there; creating your own branch strands your work on a branch no PR tracks (a frequent past failure). Find the existing PR with `gh pr list --repo "$GITHUB_REPOSITORY" --head "$(git rev-parse --abbrev-ref HEAD)" --state open` (GitHub allows at most one open PR per head branch, so this resolves to exactly your session's PR or nothing) and iterate on it. Only if that lookup returns nothing should you open one with the `runtime-tools-create_pull_request` tool.
 - When opening a PR, include the bare issue number at the top of the description (e.g. "#1234").
 - Make all of your commits in this branch. Push after each meaningful change. Never commit directly to main or protected branches.
   - Run `yarn prettier --write .` before committing any changes to ensure proper code formatting.
