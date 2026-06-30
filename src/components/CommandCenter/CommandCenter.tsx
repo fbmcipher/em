@@ -254,6 +254,7 @@ const CommandCenter = () => {
                       opacity: 0.5,
                       borderRadius: 46,
                       cursor: 'pointer',
+                      touchAction: 'manipulation',
                       padding: '8px 16px',
                       background: 'commandCenterDoneButton',
                     })}

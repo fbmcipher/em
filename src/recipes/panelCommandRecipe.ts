@@ -14,6 +14,7 @@ export default defineRecipe({
     borderRadius: 'var(--panel-command-radius)',
     overflow: 'hidden',
     cursor: 'pointer',
+    touchAction: 'manipulation',
     transition: 'opacity {durations.medium} ease, background-color {durations.medium} ease',
     opacity: 1,
     height: 60,
