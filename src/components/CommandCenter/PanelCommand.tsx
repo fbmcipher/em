@@ -96,12 +96,15 @@ const PanelCommand: FC<PanelCommandProps> = ({ command, size }) => {
       {/* For the first fade in to work properly, ActiveButtonGlowGradient must be already mounted with opacity 0. */}
       <ActiveButtonGlowGradient isActive={isButtonActive} />
       <div
+        data-testid='panel-command'
         className={cx(
           panelCommandRecipe({
             isButtonExecutable,
           }),
           css({ gridArea: 'command' }),
         )}
+        // WebkitUserSelect needed in addition to userSelect in order to disable long-tap-to-select on iOS.
+        style={{ WebkitUserSelect: 'none' }}
         {...fastClick(handleTap)}
       >
         {SVG && (

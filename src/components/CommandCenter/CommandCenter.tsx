@@ -262,6 +262,7 @@ const CommandCenter = () => {
                   </button>
                 </div>
                 <div
+                  data-testid='command-center-commands'
                   className={css({
                     display: 'grid',
                     gridTemplateColumns: 'repeat(4, 1fr)',
