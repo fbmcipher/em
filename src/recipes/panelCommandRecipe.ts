@@ -4,6 +4,7 @@ export default defineRecipe({
   className: 'panelCommandRecipe',
   base: {
     all: 'unset',
+    userSelect: 'none',
     color: 'fgOverlay75',
     position: 'relative',
     boxSizing: 'border-box',
