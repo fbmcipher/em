@@ -96,6 +96,7 @@ const PanelCommand: FC<PanelCommandProps> = ({ command, size }) => {
       {/* For the first fade in to work properly, ActiveButtonGlowGradient must be already mounted with opacity 0. */}
       <ActiveButtonGlowGradient isActive={isButtonActive} />
       <div
+        data-testid={`command-center-command-${command.id}`}
         className={cx(
           panelCommandRecipe({
             isButtonExecutable,
