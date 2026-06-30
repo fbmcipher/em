@@ -16,7 +16,7 @@ describe('command center', () => {
   // Tap-and-hold on the Command Center must not trigger iOS text selection / the magnifier,
   // i.e. the tappable panel must disable user selection.
   // .skip keeps normal CI green while the test is red; remove the .skip when the fix lands (Step 6).
-  it.skip('disables text selection on the tappable area', async () => {
+  it('disables text selection on the tappable area', async () => {
     await paste(`
       - a
       - b

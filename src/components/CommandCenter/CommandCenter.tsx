@@ -214,11 +214,16 @@ const CommandCenter = () => {
               backgroundColor: 'transparent',
               overflow: 'visible',
               boxShadow: 'none',
+              // Disable tap-and-hold text selection on the Command Center tappable area, otherwise iOS shows the selection magnifier / callout on the buttons.
+              userSelect: 'none',
             })}
             style={{
               // override default Sheet.Container styles
               maxHeight: '70%',
               zIndex: 'auto',
+              // WebkitUserSelect is needed in addition to userSelect to disable long-tap-to-select on WebKit. WebkitTouchCallout disables the callout. Set via inline style as these vendor-prefixed properties are not emitted by PandaCSS.
+              WebkitUserSelect: 'none',
+              WebkitTouchCallout: 'none',
             }}
           >
             <Sheet.Content
