@@ -85,9 +85,14 @@ Once both gates are satisfied (or determined not to apply), continue with the li
 - If a fix is ambiguous, seek clarification from the user.
 - If CI still fails after 5 fix-push cycles, stop and escalate to the user.
 
-## Output and commumication
+## Output and communication
 
-- Summarize actions taken at each step (branch creation, commits, PR creation, CI status, fixes applied).
+Work out loud. Your narration is how the user reverse-engineers and improves your behaviour, so a silent run is a failed run even when the code is correct. Do not batch many quiet tool calls and summarize only at the end — narrate as you go.
+
+- **Before each meaningful action, say what you are about to do and why** in one line. This applies to *every* tool, not just git: searches (what you're grepping for and the hypothesis behind it), file reads, edits and writes (which file and what change), shell commands, and skill invocations.
+- **After each action, state the result and how it changed your understanding or plan** — what a search turned up, why a test failed, why you're changing direction.
+- Make your **reasoning** explicit, not just your actions: state the hypothesis you're testing and why you chose this approach over the alternatives. Surface dead ends too — a discarded approach is signal for the user, not noise.
+- At each lifecycle step, summarize the concrete actions taken (branch creation, commits, searches run, files edited, PR creation, CI status, fixes applied).
 - When opening a PR, include the PR URL and status.
 - When CI fails, provide a concise diagnosis and the steps taken to resolve.
 
