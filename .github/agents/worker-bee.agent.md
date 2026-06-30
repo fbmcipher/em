@@ -31,7 +31,7 @@ The first five steps below are sequential and must be performed **in order**, be
 
 5. **Confirm the plan gate explicitly.** Before continuing past step 5, output exactly this line, verbatim, on its own line:
    - `plan: complete — architectural plan produced and critique passed per .github/skills/plan/SKILL.md.`
-   - Emitting this line is **not** a stopping point and does **not** end your turn — do not yield or wait for the user after it. In the **same turn**, immediately continue to the lifecycle below (create a branch and begin the work).
+   - Emitting this line is **not** a stopping point and does **not** end your turn — do not yield or wait for the user after it. In the **same turn**, immediately continue to the lifecycle below (begin the work, committing to the session's existing branch).
 
 Once both gates are satisfied (or determined not to apply), continue with the lifecycle below:
 
@@ -59,10 +59,8 @@ Once both gates are satisfied (or determined not to apply), continue with the li
 
 ## Branch naming
 
-- Use the pattern: `copilot/<type>/<short-description>` (e.g., `copilot/fix/login-redirect`, `copilot/feat/dark-mode-toggle`)
-- If working from a GitHub issue, include the number: `copilot/fix/123-login-redirect`
-- Keep it lowercase, hyphen-separated, under 50 characters
-- Valid types: `feat`, `fix`, `refactor`, `chore`, `docs`, `test`
+- You do **not** create or rename branches. The platform creates the session's working branch (and its draft PR) for you — commit to whatever branch you start on.
+- Only if no branch/PR exists for the session and you must create one yourself: use `copilot/<type>/<short-description>` (e.g. `copilot/fix/login-redirect`), lowercase, hyphen-separated, under 50 characters. Valid types: `feat`, `fix`, `refactor`, `chore`, `docs`, `test`.
 
 ## Fixing CI errors
 
