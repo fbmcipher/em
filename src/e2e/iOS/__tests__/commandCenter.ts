@@ -4,8 +4,7 @@ import paste from '../helpers/paste'
 
 describe('Command Center', () => {
   // Regression test for https://github.com/fbmcipher/em/issues/87
-  // .skip keeps normal CI green while the test is red; remove the .skip when the fix lands.
-  it.skip('disables tap and hold gestures on tappable command center controls', async () => {
+  it('disables tap and hold gestures on tappable command center controls', async () => {
     await paste('Hello')
     await clickThought('Hello')
     await gesture('u')
