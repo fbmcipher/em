@@ -89,11 +89,13 @@ const PopupBase = React.forwardRef<HTMLDivElement, PopupBaseProps>(
           border: 'none',
           display: 'block',
           width: '100%',
-          height: '100%',
-          // when absolutely-positioned, the top position is calculated in usePositionFixed (#3222)
+          // use 100dvh for fixed positioning so Android WebView reliably fills the visual viewport
+          height: positionFixedStyles.position === 'fixed' ? '100dvh' : '100%',
           marginBlock: positionFixedStyles.position === 'fixed' ? 'auto' : undefined,
-          top: 0,
-          bottom: 0,
+          // when keyboard is open, position is 'absolute' and top is scroll-adjusted — preserve it
+          // when keyboard is closed, position is 'fixed' so top/bottom 0 covers the full viewport
+          top: positionFixedStyles.position === 'absolute' ? positionFixedStyles.top : 0,
+          bottom: positionFixedStyles.position === 'absolute' ? positionFixedStyles.bottom : 0,
         }
       : {}
 
@@ -111,7 +113,6 @@ const PopupBase = React.forwardRef<HTMLDivElement, PopupBaseProps>(
           right: 0,
           width: 'max-content',
           ...borderStyles,
-          ...fullScreenStyles,
           '&:hover': {
             '& [data-close-button]': {
               opacity: showXOnHover ? 1 : undefined,
@@ -126,16 +127,12 @@ const PopupBase = React.forwardRef<HTMLDivElement, PopupBaseProps>(
         // merge style with useSwipeToDismissProps.style (transform, transition, and touchAction for sticking to user's touch)
         style={{
           ...positionFixedStyles,
+          ...fullScreenStyles,
           background,
           fontSize,
           padding,
           // disable swipe-to-dismiss when multicursor is active
           ...(!multicursor && useSwipeToDismissProps.style),
-          // Compose transforms from usePositionFixed (keyboard offset) and useSwipeToDismiss (drag)
-          transform:
-            [positionFixedStyles.transform, !multicursor && useSwipeToDismissProps.style?.transform]
-              .filter(Boolean)
-              .join(' ') || undefined,
         }}
         onMouseOver={onMouseOver}
         onMouseLeave={onMouseLeave}

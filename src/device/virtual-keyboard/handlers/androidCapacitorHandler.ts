@@ -1,11 +1,14 @@
 import { Capacitor } from '@capacitor/core'
 import { Keyboard } from '@capacitor/keyboard'
-import { AnimationPlaybackControls, animate } from 'motion'
+import { AnimationPlaybackControls, animate } from 'framer-motion'
 import VirtualKeyboardHandler from '../../../@types/VirtualKeyboardHandler'
 import viewportStore from '../../../stores/viewport'
 import virtualKeyboardStore from '../../../stores/virtualKeyboardStore'
+import getSafeAreaBottom from '../getSafeAreaBottom'
 
-/** A virtual keyboard handler for Android Capacitor that uses native events and spring physics. */
+/** A virtual keyboard handler for Android Capacitor that uses native events and spring physics.
+ * Normalizes native keyboard height by subtracting safe-area-bottom, so the store value
+ * represents the keyboard's contribution above the safe-area baseline. */
 const androidCapacitorHandler: VirtualKeyboardHandler = {
   init: () => {
     if (!Capacitor.isNativePlatform() || !Capacitor.isPluginAvailable('Keyboard')) return
@@ -19,13 +22,13 @@ const androidCapacitorHandler: VirtualKeyboardHandler = {
     }
 
     Keyboard.addListener('keyboardWillShow', info => {
-      const height = info.keyboardHeight || 0
-      viewportStore.update({ virtualKeyboardHeight: height })
-      virtualKeyboardStore.update({ open: true, source: 'android-capacitor' })
+      const targetHeight = (info.keyboardHeight || 0) - getSafeAreaBottom()
+      viewportStore.update({ virtualKeyboardHeight: targetHeight })
+      virtualKeyboardStore.update({ open: true })
 
       stopAnimation()
 
-      controls = animate(virtualKeyboardStore.getState().height, height, {
+      controls = animate(virtualKeyboardStore.getState().height, targetHeight, {
         type: 'spring',
         stiffness: 500,
         damping: 50,
@@ -40,13 +43,13 @@ const androidCapacitorHandler: VirtualKeyboardHandler = {
       // Use keyboardDidShow as the authoritative height — on Android the height
       // reported by keyboardWillShow can differ depending on whether the
       // autocomplete/suggestions bar is visible.
-      const height = info.keyboardHeight || 0
+      const targetHeight = (info.keyboardHeight || 0) - getSafeAreaBottom()
       stopAnimation()
-      virtualKeyboardStore.update({ open: true, height, source: 'android-capacitor' })
+      virtualKeyboardStore.update({ open: true, height: targetHeight })
     })
 
     Keyboard.addListener('keyboardWillHide', () => {
-      virtualKeyboardStore.update({ open: true, source: 'android-capacitor' })
+      virtualKeyboardStore.update({ open: true })
 
       stopAnimation()
 
@@ -63,7 +66,7 @@ const androidCapacitorHandler: VirtualKeyboardHandler = {
 
     Keyboard.addListener('keyboardDidHide', () => {
       stopAnimation()
-      virtualKeyboardStore.update({ open: false, height: 0, source: 'android-capacitor' })
+      virtualKeyboardStore.update({ open: false, height: 0 })
     })
   },
   destroy: () => {

@@ -1,4 +1,3 @@
-import { token } from '../../styled-system/tokens'
 import { isCapacitor, isSafari } from '../browser'
 import viewportStore from '../stores/viewport'
 import virtualKeyboardStore from '../stores/virtualKeyboardStore'
@@ -13,7 +12,7 @@ import useScrollTop from './useScrollTop'
  * The hook handles three concerns:
  *
  * 1. Safe-area insets: Offsets elements from the notch/status bar (top) and home indicator
- * (bottom) on rounded screens via `spacing.safeAreaTop` / `spacing.safeAreaBottom` tokens.
+ * (bottom) on rounded screens via `env(safe-area-inset-top)` / `env(safe-area-inset-bottom)`.
  *
  * 2. Keyboard avoidance: For bottom-anchored elements, offsets y position by the virtual keyboard
  * height – ensuring they remain visible even when the keyboard is open.
@@ -39,27 +38,16 @@ const usePositionFixed = ({
   position: 'fixed' | 'absolute'
   top?: string
   bottom?: string
-  transform?: string
 } => {
-  const virtualKeyboardOpen = virtualKeyboardStore.useSelector(state => state.open)
+  const virtualKeyboard = virtualKeyboardStore.useState()
 
   // On iOS Safari, emulate `position: fixed` using absolute positioning when the virtual keyboard is open.
-  const position = virtualKeyboardOpen && isSafari() && !isCapacitor() ? 'absolute' : 'fixed'
+  const position = virtualKeyboard.open && isSafari() && !isCapacitor() ? 'absolute' : 'fixed'
 
   // Only subscribe to scroll events when emulating with position: fixed. mode — in fixed mode, scroll position
   // is irrelevant and listening would cause unnecessary re-renders.
   const scrollTop = useScrollTop({ disabled: position === 'fixed' })
   const { innerHeight } = viewportStore.useState()
-
-  // virtualKeyboard.height incorporates the safe-area-bottom inset: the closing
-  // animation targets safe-area-bottom (not 0), so the height smoothly settles at
-  // the safe area value before open becomes false. This means we can use it directly
-  // as the bottom inset without additional safe-area offsets for fromBottom elements.
-
-  // The keyboard offset is applied via transform using a CSS custom property
-  // (--virtual-keyboard-height) that is written directly by the keyboard handlers,
-  // bypassing React. This avoids per-frame re-renders during the spring animation.
-  const keyboardTransform = fromBottom ? 'translateY(calc(-1 * var(--virtual-keyboard-height, 0px)))' : undefined
 
   let top, bottom
 
@@ -68,37 +56,38 @@ const usePositionFixed = ({
     if (fromBottom) {
       // Position the element at the bottom of the visible area, above the keyboard.
       //
-      // The visible bottom edge is:
-      //   scrollTop + innerHeight
+      // The visible bottom edge is calculated with:
+      //   scrollTop + innerHeight - virtualKeyboard.height
       //
       // We clamp this to document.body.scrollHeight so the element never extends past
       // the document boundary (e.g. when the page is shorter than the viewport).
       //
-      // Then subtract the element's own height and offset. The keyboard offset is
-      // handled by the transform.
+      // Then subtract the element's own height and offset if provided by the caller, and subtract the
+      // safe-area-bottom inset so the element doesn't overlap the rounded-screen home indicator.
       //
-      const visibleBottom = Math.min(document.body.scrollHeight, scrollTop + innerHeight)
-      top = `${visibleBottom - (height ?? 0) - offset}px`
+      const visibleBottom = Math.min(document.body.scrollHeight, scrollTop + innerHeight - virtualKeyboard.height)
+      top = `calc(${visibleBottom - (height ?? 0) - offset}px - env(safe-area-inset-bottom))`
     } else {
       // fromTop
       // Position the element at the top of the visible area.
       // scrollTop gives the top of the visible viewport. Add safe-area-top for
       // rounded screens (e.g. iPhone notch) and any additional offset if provided.
-      top = `calc(${scrollTop}px + ${token('spacing.safeAreaTop')} + ${offset}px)`
+      top = `calc(${scrollTop}px + env(safe-area-inset-top) + ${offset}px)`
     }
   }
 
-  // Calculate values for normal `position: fixed`.
+  // Calculate `top` values for normal `position: fixed`.
   if (position === 'fixed') {
     if (fromBottom) {
-      // The base position is anchored to the bottom edge with the given offset.
-      // The keyboard height offset is applied via transform for performance.
-      bottom = `${offset}px`
+      // Normal fixed positioning anchored to the bottom — safe-area-bottom keeps the element
+      // above the home indicator on rounded screens, and virtualKeyboard.height pushes it
+      // above the keyboard when open.
+      bottom = `calc(env(safe-area-inset-bottom) + ${virtualKeyboard.height}px + ${offset}px)`
     } else {
       // fromTop
       // Normal fixed positioning anchored to the top — safe-area-top keeps the element
       // below the notch/status bar on rounded screens.
-      top = `calc(${token('spacing.safeAreaTop')} + ${offset}px)`
+      top = `calc(env(safe-area-inset-top) + ${offset}px)`
     }
   }
 
@@ -106,7 +95,6 @@ const usePositionFixed = ({
     position: position ?? 'fixed',
     top,
     bottom,
-    transform: keyboardTransform,
   }
 }
 

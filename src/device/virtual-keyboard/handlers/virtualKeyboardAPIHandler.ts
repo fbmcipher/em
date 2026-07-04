@@ -1,29 +1,34 @@
-import { AnimationPlaybackControls, animate } from 'motion'
+import { AnimationPlaybackControls, animate } from 'framer-motion'
 import VirtualKeyboardHandler from '../../../@types/VirtualKeyboardHandler'
 import virtualKeyboardStore from '../../../stores/virtualKeyboardStore'
+import getSafeAreaBottom from '../getSafeAreaBottom'
 
 let controls: AnimationPlaybackControls | null = null
 
 /** Handles geometrychange events from the VirtualKeyboard API. */
 const onGeometryChange = () => {
   if (!navigator.virtualKeyboard) return
-  const { height } = navigator.virtualKeyboard.boundingRect
-  const isOpen = height > 0
+  const rawHeight = navigator.virtualKeyboard.boundingRect.height
+  const isOpen = rawHeight > 0
 
-  virtualKeyboardStore.update({ open: isOpen, source: 'virtual-keyboard-api' })
+  // Normalize by subtracting safe-area-bottom so the store value represents the keyboard's
+  // contribution above the safe-area baseline (consistent with the Capacitor/Safari handlers).
+  const targetHeight = isOpen ? Math.max(0, rawHeight - getSafeAreaBottom()) : 0
+
+  virtualKeyboardStore.update({ open: isOpen })
 
   controls?.stop()
 
-  controls = animate(virtualKeyboardStore.getState().height, height, {
+  controls = animate(virtualKeyboardStore.getState().height, targetHeight, {
     type: 'spring',
     stiffness: 2500,
     damping: 125,
     mass: 1,
     onUpdate: value => {
-      virtualKeyboardStore.update({ height: value, source: 'virtual-keyboard-api' })
+      virtualKeyboardStore.update({ height: value })
     },
     onComplete: () => {
-      virtualKeyboardStore.update({ height, source: 'virtual-keyboard-api' })
+      virtualKeyboardStore.update({ height: targetHeight })
     },
   })
 }

@@ -1,10 +1,13 @@
-import { HOME_TOKEN } from '../../constants'
+import { HOME_PATH, HOME_TOKEN } from '../../constants'
 import exportContext from '../../selectors/exportContext'
+import getThoughtById from '../../selectors/getThoughtById'
 import expectPathToEqual from '../../test-helpers/expectPathToEqual'
 import setCursor from '../../test-helpers/setCursorFirstMatch'
 import initialState from '../../util/initialState'
 import reducerFlow from '../../util/reducerFlow'
 import importText from '../importText'
+import newThought from '../newThought'
+import setSortPreference from '../setSortPreference'
 import swapParent from '../swapParent'
 import toggleContextView from '../toggleContextView'
 
@@ -44,6 +47,25 @@ it('no-op if cursor is a root thought', () => {
       - c`)
 })
 
+it('swaps two empty thoughts without error', () => {
+  // Create an empty parent with an empty child and swap them.
+  // Both thoughts have value '' (empty string), which previously triggered an unwanted merge.
+  const steps = [newThought({ value: '' }), newThought({ value: '', insertNewSubthought: true }), swapParent]
+
+  // Should not throw
+  const stateNew = reducerFlow(steps)(initialState())
+
+  // No error alert should appear
+  expect(stateNew.alert?.value).toBeFalsy()
+
+  // Cursor should be on the child thought (which is now at root level after the swap)
+  const cursorId = stateNew.cursor?.[stateNew.cursor.length - 1]
+  expect(cursorId).toBeTruthy()
+  const cursorThought = getThoughtById(stateNew, cursorId!)
+  expect(cursorThought).toBeTruthy()
+  expect(cursorThought!.value).toBe('')
+})
+
 it('swaps child thought with parent', () => {
   const text = `
   - x
@@ -61,7 +83,7 @@ it('swaps child thought with parent', () => {
     - a
       - c`)
 
-  expectPathToEqual(stateNew, stateNew.cursor, ['b', 'a'])
+  expectPathToEqual(stateNew, stateNew.cursor, ['b'])
 })
 
 it('swaps a leaf thought with parent', () => {
@@ -81,7 +103,7 @@ it('swaps a leaf thought with parent', () => {
     - c
       - b`)
 
-  expectPathToEqual(stateNew, stateNew.cursor, ['a', 'c', 'b'])
+  expectPathToEqual(stateNew, stateNew.cursor, ['a', 'c'])
 })
 
 it('preserve siblings', () => {
@@ -121,7 +143,7 @@ it('swapped parent should take the rank of the child', () => {
       - c
     - a`)
 
-  expectPathToEqual(stateNew, stateNew.cursor, ['d', 'a'])
+  expectPathToEqual(stateNew, stateNew.cursor, ['d'])
 })
 
 describe('context view', () => {
@@ -155,7 +177,7 @@ describe('context view', () => {
       - y1
         - y`)
 
-    expectPathToEqual(stateNew, stateNew.cursor, ['a', 'm', 'b', 'y1', 'y'])
+    expectPathToEqual(stateNew, stateNew.cursor, ['a', 'm', 'b', 'y1'])
   })
 
   it('disallow on contexts in the context view', () => {
@@ -226,5 +248,64 @@ describe('context view', () => {
     expectPathToEqual(stateNew, stateNew.cursor, ['a', 'm', 'a', 'x'])
 
     expect(stateNew.alert?.value).toBeTruthy()
+  })
+})
+
+describe('sort', () => {
+  it('does not throw when re-swapping parent with Created sort active', () => {
+    const text = `
+    - a
+      - b
+    - c
+    - d
+  `
+
+    const steps = [
+      importText({ text }),
+      setSortPreference({ simplePath: HOME_PATH, sortPreference: { type: 'Created', direction: 'Desc' } }),
+      setCursor(['a', 'b']),
+      swapParent,
+      swapParent,
+    ]
+
+    // Should not throw
+    const stateNew = reducerFlow(steps)(initialState())
+    const exported = exportContext(stateNew, [HOME_TOKEN], 'text/plain')
+    expect(exported).toContain('- a')
+    expect(exported).toContain('- b')
+  })
+
+  it('root children are re-sorted after swapParent with active sort', () => {
+    // Reproduce the issue: cursor on A, set Created sort, create subthought B, swap B with A.
+    // B must be created as a separate step so its creation order is after A, C, D.
+    const steps = [
+      importText({
+        text: `
+        - a
+        - c
+        - d
+      `,
+      }),
+      setCursor(['a']),
+      setSortPreference({ simplePath: HOME_PATH, sortPreference: { type: 'Created', direction: 'Asc' } }),
+      newThought({ value: 'b', insertNewSubthought: true }),
+      setCursor(['a', 'b']),
+      swapParent,
+    ]
+
+    const stateNew = reducerFlow(steps)(initialState())
+
+    // Use excludeMeta to focus on regular thoughts only.
+    // b was created last (separate newThought step), so it always sorts after c and d in Created Asc order.
+    const exported = exportContext(stateNew, [HOME_TOKEN], 'text/plain', { excludeMeta: true })
+
+    // After swapParent, b is at root and a is b's child.
+    // Without the fix, b would inherit a's rank (first) and appear before c and d.
+    // With sort(HOME_TOKEN), b is ranked last since it was created after c and d.
+    expect(exported).toBe(`- ${HOME_TOKEN}
+  - c
+  - d
+  - b
+    - a`)
   })
 })
