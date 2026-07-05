@@ -11,6 +11,9 @@ public class MainActivity extends BridgeActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Register app-local plugins before the bridge initializes.
+        registerPlugin(VirtualKeyboardTracker.class);
+
         super.onCreate(savedInstanceState);
 
         // When the keyboard (IME) opens, Android sends window insets to the FrameLayout that contains the WebView.
