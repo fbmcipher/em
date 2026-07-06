@@ -79,9 +79,14 @@ describe('drag and drop multiple thoughts', () => {
     const highlightedBullets = await page.$$('[aria-label="bullet"][data-highlighted="true"]')
     expect(highlightedBullets.length).toBe(0)
 
-    // 2. the "Drag and drop to move thought" hint alert is dismissed
+    // 2. the "Drag and drop to move thought" hint alert is dismissed.
+    // On dismissal the alert-content element is unmounted (Alert renders it only while alert is truthy),
+    // so $eval throws once the fade-out completes and alertContent is null. A missing alert is the
+    // most-dismissed state and must pass — but expect(null).not.toContain('string') throws
+    // "null and string invalid" instead, flaking the test on the timing of the alert's removal.
+    // Fall back to '' so a removed alert passes.
     const alertContent = await page.$eval('[data-testid=alert-content]', el => el.textContent).catch(() => null)
-    expect(alertContent).not.toContain('Drag and drop to move thought')
+    expect(alertContent ?? '').not.toContain('Drag and drop to move thought')
 
     // 3. the cursor is placed on the drop target
     expect(await getEditingText()).toBe('a')
