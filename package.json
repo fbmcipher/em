@@ -43,6 +43,8 @@
     "lint:src": "FORCE_COLOR=1 NODE_OPTIONS=--max-old-space-size=4096 eslint . --cache --rule 'no-console: [2, { allow: [error, info, warn] }]'",
     "lint:tsc": "tsc",
     "lint": "FORCE_COLOR=1 npm-run-all --serial \"lint:*\"",
+    "mcp": "tsx src/mcp/server.ts",
+    "mcp:chrome": "EM_CHROME_HEADLESS=0 EM_CHROME_START_URL=https://localhost:3000 node scripts/shared-chrome.mjs",
     "postinstall": "yarn build:packages && git config core.hooksPath .hooks && yarn build:styles",
     "servebuild": "vite preview --port 3000",
     "start": "vite --host --port 3000",
@@ -98,6 +100,7 @@
     "@capacitor/status-bar": "^8.0.3",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@mui/material": "^9.2.0",
     "@radix-ui/react-dialog": "^1.1.19",
     "@radix-ui/react-visually-hidden": "^1.2.7",
@@ -162,7 +165,8 @@
     "y-indexeddb": "⚠️ OVERRIDDEN BY 'resolutions' - Source: https://github.com/raineorshine/y-indexeddb#y-indexeddb-multiplex | Tarball: https://codeload.github.com/raineorshine/y-indexeddb/tar.gz/60b960009085b1a988b5064ee35703229231531f | Configured in: package.json#resolutions",
     "y-protocols": "^1.0.7",
     "yallist": "^5.0.0",
-    "yjs": "^13.6.31"
+    "yjs": "^13.6.31",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@babel/core": "^8.0.1",
@@ -246,6 +250,7 @@
     "react-dnd-test-utils": "^16.0.1",
     "redux-mock-store": "^1.5.5",
     "tcp-port-used": "^1.0.3",
+    "tsx": "^4.20.6",
     "typescript": "5.9.3",
     "undici": "^8.7.0",
     "vi-canvas-mock": "^1.0.0",

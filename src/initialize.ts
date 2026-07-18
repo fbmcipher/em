@@ -18,13 +18,14 @@ import { pullActionCreator as pull } from './actions/pull'
 import { repairThoughtActionCreator as repairThought } from './actions/repairThought'
 import { setCursorActionCreator as setCursor } from './actions/setCursor'
 import { updateThoughtsActionCreator } from './actions/updateThoughts'
-import { commandById, executeCommand } from './commands'
+import { commandById, executeCommand, globalCommands } from './commands'
 import { HOME_TOKEN } from './constants'
 import getLexemeHelper from './data-providers/data-helpers/getLexeme'
 import { accessToken, clientIdReady, tsid, tsidShared } from './data-providers/yjs'
 import db, { init as initThoughtspace, replicateLexeme, replicateThought } from './data-providers/yjs/thoughtspace'
 import * as selection from './device/selection'
 import testFlags from './e2e/testFlags'
+import createMcpEditor from './mcp/createMcpEditor'
 import contextToThoughtId from './selectors/contextToThoughtId'
 import decodeThoughtsUrl from './selectors/decodeThoughtsUrl'
 import exportContext from './selectors/exportContext'
@@ -200,10 +201,13 @@ const withDispatch =
   (...args: T) =>
     store.dispatch(f(...args))
 
+/** Executes a user-facing command by its stable id. */
+const executeCommandById = (id: CommandId) => {
+  executeCommand(commandById(id))
+}
+
 const testHelpers = {
-  executeCommandById: (id: CommandId) => {
-    executeCommand(commandById(id))
-  },
+  executeCommandById,
   setSelection: selection.set,
   importToContext: withDispatch(importToContext),
   getLexemeFromIndexedDB: (value: string) => getLexemeHelper(db, value),
@@ -240,6 +244,11 @@ const windowEm = {
     return id ? getThoughtById(state, id) : undefined
   }),
   hashThought,
+  mcp: createMcpEditor({
+    commands: globalCommands,
+    dispatch: store.dispatch,
+    executeCommand: executeCommandById,
+  }),
   moize,
   // subscribe state changes for debugging
   // e.g. em.onStateChange(state => state.editingValue)

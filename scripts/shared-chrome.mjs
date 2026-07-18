@@ -14,6 +14,7 @@ import { spawn } from 'node:child_process'
 import puppeteer from 'puppeteer'
 
 const port = process.env.EM_CHROME_PORT || '9222'
+const startUrl = process.env.EM_CHROME_START_URL
 const executablePath = puppeteer.executablePath()
 const args = [
   `--remote-debugging-port=${port}`,
@@ -34,6 +35,7 @@ const args = [
   ...(process.platform === 'linux' && process.env.EM_CHROME_NO_SANDBOX !== '0'
     ? ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
     : []),
+  ...(startUrl ? [startUrl] : []),
 ]
 
 console.info(`Launching shared Chrome on :${port}\n  ${executablePath} ${args.join(' ')}`)

@@ -3,7 +3,7 @@ import 'fake-indexeddb/auto'
 import * as matchers from 'jest-extended'
 // requires jest config resetMocks: false after react-scripts v4
 import { noop } from 'lodash'
-import { TextDecoder, TextEncoder } from 'util'
+import { TextDecoder, TextEncoder } from 'node:util'
 import 'vi-canvas-mock'
 
 expect.extend(matchers)
