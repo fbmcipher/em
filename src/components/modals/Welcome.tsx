@@ -66,7 +66,7 @@ const ModalWelcome = () => {
     <div ref={onRef}>
       <ModalComponent
         id='welcome'
-        title='Welcome to em'
+        title='Welcome'
         hideModalActions={false}
         hideClose={true}
         center
