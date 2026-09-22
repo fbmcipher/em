@@ -25,22 +25,24 @@ import java.util.List;
  */
 @CapacitorPlugin(name = "VirtualKeyboardTracker")
 public class VirtualKeyboardTracker extends Plugin {
-
     @Override
     public void load() {
-        // Attach to the content view (the same view MainActivity strips IME insets on). Reading the
-        // IME inset here — on an ancestor of the WebView — gives the real animating value, before the
-        // OnApplyWindowInsetsListener zeroes it for the WebView subtree.
-        //
-        // NOTE: if the streamed height ever reads 0 during a show on a device, the inset is being
-        // consumed before this callback — in that case switch to interpolating from the animation
-        // fraction (animation.getInterpolatedFraction()) against the target inset captured in onEnd.
-        final View contentView = getActivity().findViewById(android.R.id.content);
+        final View decorView = getActivity().getWindow().getDecorView();
         final float density = getContext().getResources().getDisplayMetrics().density;
 
+        // Registration during plugin load delivered no progress on Android 17 in the diagnostic run.
+        // Attach after window focus, when activity and WebView inset setup is complete.
+        decorView.getViewTreeObserver().addOnWindowFocusChangeListener(hasFocus -> {
+            if (hasFocus) decorView.post(() -> installCallback(decorView, density));
+        });
+        if (decorView.hasWindowFocus()) decorView.post(() -> installCallback(decorView, density));
+    }
+
+    /** Installs a per-frame IME observer on the window's decor view while preserving child dispatch. */
+    private void installCallback(View decorView, float density) {
         ViewCompat.setWindowInsetsAnimationCallback(
-            contentView,
-            new WindowInsetsAnimationCompat.Callback(WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP) {
+            decorView,
+            new WindowInsetsAnimationCompat.Callback(WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE) {
                 @NonNull
                 @Override
                 public WindowInsetsCompat onProgress(
@@ -65,7 +67,7 @@ public class VirtualKeyboardTracker extends Plugin {
                 public void onEnd(@NonNull WindowInsetsAnimationCompat animation) {
                     // Emit the resting height once the animation settles, so the final frame is never missed.
                     if ((animation.getTypeMask() & WindowInsetsCompat.Type.ime()) != 0) {
-                        WindowInsetsCompat rootInsets = ViewCompat.getRootWindowInsets(contentView);
+                        WindowInsetsCompat rootInsets = ViewCompat.getRootWindowInsets(decorView);
                         if (rootInsets != null) {
                             emitHeight(rootInsets, density);
                         }

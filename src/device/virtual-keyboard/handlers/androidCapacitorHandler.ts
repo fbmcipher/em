@@ -16,16 +16,10 @@ import getSafeAreaBottom from '../getSafeAreaBottom'
  * contribution above the safe-area baseline (consistent with the iOS handlers). */
 const androidCapacitorHandler: VirtualKeyboardHandler = {
   init: () => {
-    if (!Capacitor.isNativePlatform() || !Capacitor.isPluginAvailable('Keyboard')) {
-      console.log("not initing")
-      return
-    }
-
-    console.log("init")
+    if (!Capacitor.isNativePlatform() || !Capacitor.isPluginAvailable('Keyboard')) return
 
     // Drive the store height from the real per-frame keyboard position streamed by the native plugin.
     VirtualKeyboardTracker.addListener('keyboardProgress', ({ height }) => {
-      console.log("Got keyboard update", { height });
       virtualKeyboardStore.update({ height: Math.max(0, height - getSafeAreaBottom()) })
     })
 
