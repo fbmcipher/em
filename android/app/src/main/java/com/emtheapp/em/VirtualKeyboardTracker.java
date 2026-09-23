@@ -54,6 +54,7 @@ public class VirtualKeyboardTracker extends Plugin {
                                     insets.getInsets(WindowInsets.Type.ime()).bottom,
                                     insets.getInsets(WindowInsets.Type.navigationBars()).bottom,
                                     Build.VERSION.SDK_INT >= 35 ? insets.getFrame().getHeight() : decorView.getHeight(),
+                                    animation.getInterpolatedFraction(),
                                     density,
                                     decorView
                                 );
@@ -72,6 +73,7 @@ public class VirtualKeyboardTracker extends Plugin {
                                     rootInsets.getInsets(WindowInsets.Type.ime()).bottom,
                                     rootInsets.getInsets(WindowInsets.Type.navigationBars()).bottom,
                                     Build.VERSION.SDK_INT >= 35 ? rootInsets.getFrame().getHeight() : decorView.getHeight(),
+                                    1.0f,
                                     density,
                                     decorView
                                 );
@@ -93,18 +95,19 @@ public class VirtualKeyboardTracker extends Plugin {
                     @NonNull List<WindowInsetsAnimationCompat> runningAnimations
                 ) {
                     // Only react to frames of the IME (keyboard) animation, ignoring status/nav bar animations.
-                    boolean imeAnimating = false;
+                    WindowInsetsAnimationCompat imeAnimation = null;
                     for (WindowInsetsAnimationCompat animation : runningAnimations) {
                         if ((animation.getTypeMask() & WindowInsetsCompat.Type.ime()) != 0) {
-                            imeAnimating = true;
+                            imeAnimation = animation;
                             break;
                         }
                     }
-                    if (imeAnimating) {
+                    if (imeAnimation != null) {
                         emitHeight(
                             insets.getInsets(WindowInsetsCompat.Type.ime()).bottom,
                             insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom,
                             decorView.getHeight(),
+                            imeAnimation.getInterpolatedFraction(),
                             density,
                             decorView
                         );
@@ -122,6 +125,7 @@ public class VirtualKeyboardTracker extends Plugin {
                                 rootInsets.getInsets(WindowInsetsCompat.Type.ime()).bottom,
                                 rootInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom,
                                 decorView.getHeight(),
+                                1.0f,
                                 density,
                                 decorView
                             );
@@ -133,7 +137,7 @@ public class VirtualKeyboardTracker extends Plugin {
     }
 
     /** Emits the current IME height (in CSS pixels) as a keyboardProgress event. */
-    private void emitHeight(int imeHeightPx, int navigationBarPx, int insetsFrameHeightPx, float density, View decorView) {
+    private void emitHeight(int imeHeightPx, int navigationBarPx, int insetsFrameHeightPx, float fraction, float density, View decorView) {
         double imeHeightCss = imeHeightPx / density;
         int[] decorPosition = new int[2];
         decorView.getLocationOnScreen(decorPosition);
@@ -144,6 +148,7 @@ public class VirtualKeyboardTracker extends Plugin {
         data.put("imeHeightPx", imeHeightPx);
         data.put("navigationBarPx", navigationBarPx);
         data.put("insetsFrameHeightPx", insetsFrameHeightPx);
+        data.put("fraction", fraction);
         data.put("decorHeightPx", decorView.getHeight());
         data.put("decorTopPx", decorPosition[1]);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
