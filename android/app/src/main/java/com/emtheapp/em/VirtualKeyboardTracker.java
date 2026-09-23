@@ -1,9 +1,13 @@
 package com.emtheapp.em;
 
+import android.graphics.Color;
 import android.os.Build;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowInsetsAnimation;
+import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsAnimationCompat;
@@ -28,6 +32,8 @@ import java.util.List;
  */
 @CapacitorPlugin(name = "VirtualKeyboardTracker")
 public class VirtualKeyboardTracker extends Plugin {
+    private View nativeProbe;
+
     @Override
     public void load() {
         final View decorView = getActivity().getWindow().getDecorView();
@@ -43,6 +49,22 @@ public class VirtualKeyboardTracker extends Plugin {
 
     /** Installs a per-frame IME observer on the window's decor view while preserving child dispatch. */
     private void installCallback(View decorView, float density) {
+        if (BuildConfig.DEBUG && nativeProbe == null) {
+            // Keep a native reference line beside the WebView probe to reveal presentation lag.
+            View probe = new View(getContext());
+            probe.setBackgroundColor(Color.YELLOW);
+            probe.setClickable(false);
+            probe.setFocusable(false);
+            probe.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            FrameLayout.LayoutParams layout = new FrameLayout.LayoutParams(
+                Math.max(1, decorView.getWidth() / 3),
+                Math.max(1, Math.round(8 * density)),
+                Gravity.LEFT | Gravity.BOTTOM
+            );
+            ((ViewGroup) decorView).addView(probe, layout);
+            nativeProbe = probe;
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             decorView.setWindowInsetsAnimationCallback(
                 new WindowInsetsAnimation.Callback(WindowInsetsAnimation.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE) {
@@ -138,13 +160,23 @@ public class VirtualKeyboardTracker extends Plugin {
 
     /** Emits the current IME height (in CSS pixels) as a keyboardProgress event. */
     private void emitHeight(int imeHeightPx, int navigationBarPx, int insetsFrameHeightPx, float fraction, float density, View decorView) {
+        if (nativeProbe != null) nativeProbe.setTranslationY(-imeHeightPx);
+
         double imeHeightCss = imeHeightPx / density;
+        long nativeTimeMs = System.currentTimeMillis();
+        if (BuildConfig.DEBUG) {
+            // Compare Capacitor event delivery with direct WebView evaluation in diagnostic builds.
+            getBridge().getWebView().evaluateJavascript(
+                "window.__setImeDirect&&window.__setImeDirect(" + imeHeightCss + "," + nativeTimeMs + ")",
+                null
+            );
+        }
         int[] decorPosition = new int[2];
         decorView.getLocationOnScreen(decorPosition);
 
         JSObject data = new JSObject();
         data.put("height", imeHeightCss);
-        data.put("nativeTimeMs", System.currentTimeMillis());
+        data.put("nativeTimeMs", nativeTimeMs);
         data.put("imeHeightPx", imeHeightPx);
         data.put("navigationBarPx", navigationBarPx);
         data.put("insetsFrameHeightPx", insetsFrameHeightPx);
