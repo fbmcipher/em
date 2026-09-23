@@ -33,6 +33,7 @@ import java.util.List;
 @CapacitorPlugin(name = "VirtualKeyboardTracker")
 public class VirtualKeyboardTracker extends Plugin {
     private View nativeProbe;
+    private int diagnosticTargetPx;
 
     @Override
     public void load() {
@@ -160,14 +161,35 @@ public class VirtualKeyboardTracker extends Plugin {
 
     /** Emits the current IME height (in CSS pixels) as a keyboardProgress event. */
     private void emitHeight(int imeHeightPx, int navigationBarPx, int insetsFrameHeightPx, float fraction, float density, View decorView) {
-        if (nativeProbe != null) nativeProbe.setTranslationY(-imeHeightPx);
+        int rootImeHeightPx = 0;
+        int windowMetricsImeHeightPx = 0;
+        int windowBoundsHeightPx = decorView.getHeight();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowInsets rootInsets = decorView.getRootWindowInsets();
+            if (rootInsets != null) {
+                rootImeHeightPx = rootInsets.getInsets(WindowInsets.Type.ime()).bottom;
+            }
+            android.view.WindowMetrics metrics = getActivity().getWindowManager().getCurrentWindowMetrics();
+            windowBoundsHeightPx = metrics.getBounds().height();
+            windowMetricsImeHeightPx = metrics.getWindowInsets().getInsets(WindowInsets.Type.ime()).bottom;
+        }
+
+        // Diagnostic candidate: replay the live system fraction over the measured target height.
+        if (windowMetricsImeHeightPx > 0 && (diagnosticTargetPx == 0 || windowMetricsImeHeightPx <= diagnosticTargetPx + 10)) {
+            diagnosticTargetPx = windowMetricsImeHeightPx;
+        }
+        int correctedHeightPx = diagnosticTargetPx == 0
+            ? imeHeightPx
+            : Math.round((rootImeHeightPx > 0 ? fraction : 1.0f - fraction) * diagnosticTargetPx);
+        if (nativeProbe != null) nativeProbe.setTranslationY(-correctedHeightPx);
 
         double imeHeightCss = imeHeightPx / density;
+        double correctedHeightCss = correctedHeightPx / density;
         long nativeTimeMs = System.currentTimeMillis();
         if (BuildConfig.DEBUG) {
             // Compare Capacitor event delivery with direct WebView evaluation in diagnostic builds.
             getBridge().getWebView().evaluateJavascript(
-                "window.__setImeDirect&&window.__setImeDirect(" + imeHeightCss + "," + nativeTimeMs + ")",
+                "window.__setImeDirect&&window.__setImeDirect(" + correctedHeightCss + "," + nativeTimeMs + ")",
                 null
             );
         }
@@ -176,6 +198,7 @@ public class VirtualKeyboardTracker extends Plugin {
 
         JSObject data = new JSObject();
         data.put("height", imeHeightCss);
+        data.put("correctedHeight", correctedHeightCss);
         data.put("nativeTimeMs", nativeTimeMs);
         data.put("imeHeightPx", imeHeightPx);
         data.put("navigationBarPx", navigationBarPx);
@@ -184,13 +207,9 @@ public class VirtualKeyboardTracker extends Plugin {
         data.put("decorHeightPx", decorView.getHeight());
         data.put("decorTopPx", decorPosition[1]);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowInsets rootInsets = decorView.getRootWindowInsets();
-            if (rootInsets != null) {
-                data.put("rootImeHeightPx", rootInsets.getInsets(WindowInsets.Type.ime()).bottom);
-            }
-            android.view.WindowMetrics metrics = getActivity().getWindowManager().getCurrentWindowMetrics();
-            data.put("windowBoundsHeightPx", metrics.getBounds().height());
-            data.put("windowMetricsImeHeightPx", metrics.getWindowInsets().getInsets(WindowInsets.Type.ime()).bottom);
+            data.put("rootImeHeightPx", rootImeHeightPx);
+            data.put("windowBoundsHeightPx", windowBoundsHeightPx);
+            data.put("windowMetricsImeHeightPx", windowMetricsImeHeightPx);
         }
         notifyListeners("keyboardProgress", data);
     }
